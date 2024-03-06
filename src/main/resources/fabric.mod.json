@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "rebalance",
+  "version": "${version}",
+  "name": "Rebalance",
+  "description": "Позволяет мобам разорвать тебе очко",
+  "authors": ["xLeiten"],
+  "license": "All-Rights-Reserved",
+  "environment": "server",
+  "entrypoints": {
+    "fabric-datagen": [
+      "me.xleiten.rebalance.core.datagen.ModDataGenerator"
+    ],
+    "server": [
+      "me.xleiten.rebalance.Rebalance"
+    ],
+    "mm:early_risers": [
+      "me.xleiten.rebalance.core.asm.ModFabricASMEntry"
+    ]
+  },
+  "mixins": [
+    "rebalance.mixins.json"
+  ],
+  "accessWidener": "rebalance.accesswidener",
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}
