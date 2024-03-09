@@ -2,15 +2,14 @@ package me.xleiten.rebalance.core.mixins.world.entity.combat.health_slowdown;
 
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
-import me.xleiten.rebalance.api.game.world.entity.mob.attribute.AttributeModifier;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
 import me.xleiten.rebalance.api.game.world.entity.tags.ModEntityTypeTags;
+import me.xleiten.rebalance.util.AttributeHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -28,15 +27,16 @@ import static net.minecraft.entity.attribute.EntityAttributeModifier.Operation.M
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity implements Living
 {
-    @Unique private static final Option<Float> HEALTH_SLOWDOWN_STOP_LIMIT = Settings.MOB_SETTINGS.option("health-slowdown-stop-limit", 0.6f);
-    @Unique private static final Option<Float> HEALTH_RATIO_MULTIPLIER = Settings.PLAYER_SETTINGS.option("health-slowdown-ratio-mult", 0.8f);
+    @Unique private static final Option<Float> AFFECTION_HEALTH_LIMIT = Settings.SLOWDOWN_BY_HEALTH.option("affection-health-limit", 0.6f);
+    @Unique private static final Option<Float> EFFECT_MULTIPLIER = Settings.SLOWDOWN_BY_HEALTH.option("effect-multiplier", 0.8f);
+    @Unique private static final Option<String> MOVE_SPEED_MODIFIER_UUID = Settings.SLOWDOWN_BY_HEALTH.option("modifier-uuid", "e7c316a0-7f28-4897-a096-57e572e66ce3");
 
     @Shadow public abstract float getHealth();
     @Shadow public abstract float getMaxHealth();
     @Shadow public abstract boolean isAlive();
     @Shadow @Nullable public abstract EntityAttributeInstance getAttributeInstance(EntityAttribute attribute);
 
-    @Unique private static final UUID HEALTH_SLOWDOWN_UUID = UUID.fromString("e7c316a0-7f28-4897-a096-57e572e66ce3");
+    @Unique private static final UUID MODIFIER_UUID = UUID.fromString(MOVE_SPEED_MODIFIER_UUID.getValue());
 
     protected MixinLivingEntity(EntityType<?> type, World world)
     {
@@ -49,35 +49,31 @@ public abstract class MixinLivingEntity extends Entity implements Living
     )
     public void recheckHealth(CallbackInfo ci) {
         if (isAlive() && !getType().isIn(ModEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)) {
-            var moveSpeedAttribute = getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-            if (moveSpeedAttribute != null) {
-                var modifier = moveSpeedAttribute.getModifier(HEALTH_SLOWDOWN_UUID);
-                var ratio = getHealth() / getMaxHealth();
-                if (modifier != null) {
-                    ((AttributeModifier) modifier).cringeMod$setValue(ratio < getHealthSlowdownStopLimit() ? calcHealthSlowdownValue(ratio) : 0);
-                    moveSpeedAttribute.onUpdate();
-                } else {
-                    moveSpeedAttribute.addPersistentModifier(
-                            new EntityAttributeModifier(HEALTH_SLOWDOWN_UUID, "healthSlowDown", calcHealthSlowdownValue(ratio), MULTIPLY_BASE)
-                    );
-                }
-            }
+            var ratio = getHealth() / getMaxHealth();
+            AttributeHelper.addOrSetModifier(
+                    getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED),
+                    MODIFIER_UUID,
+                    ratio < getAffectionHealthLimit() ? calcSlowdownValue(ratio) : 0,
+                    "healthSlowdown",
+                    MULTIPLY_BASE,
+                    true
+            );
         }
     }
 
     @Unique
-    private double calcHealthSlowdownValue(float ratio) {
-        var temp = 1 - ratio;
-        return -temp * Math.sqrt(temp) * getHealthRatioMult();
+    private double calcSlowdownValue(float healthRatio) {
+        var temp = 1 - healthRatio;
+        return -temp * Math.sqrt(temp) * getEffectMultiplier();
     }
 
     @Unique
-    public float getHealthSlowdownStopLimit() {
-        return HEALTH_SLOWDOWN_STOP_LIMIT.getValue();
+    public float getAffectionHealthLimit() {
+        return AFFECTION_HEALTH_LIMIT.getValue();
     }
 
     @Unique
-    public float getHealthRatioMult() {
-        return HEALTH_RATIO_MULTIPLIER.getValue();
+    public float getEffectMultiplier() {
+        return EFFECT_MULTIPLIER.getValue();
     }
 }
