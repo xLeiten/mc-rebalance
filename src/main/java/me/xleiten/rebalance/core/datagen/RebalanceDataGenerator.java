@@ -1,13 +1,17 @@
 package me.xleiten.rebalance.core.datagen;
 
-import me.xleiten.rebalance.api.game.world.entity.tags.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.EntityType;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -20,6 +24,7 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
     {
         FabricDataGenerator.Pack pack = generator.createPack();
         pack.addProvider(EntityTagProvider::new);
+        pack.addProvider(BiomeTagProvider::new);
     }
 
     private static class EntityTagProvider extends FabricTagProvider.EntityTypeTagProvider
@@ -91,6 +96,30 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
 
             getOrCreateTagBuilder(ModEntityTypeTags.WITHOUT_HEALTH_DISPLAY)
                     .addTag(ModEntityTypeTags.BOSSES)
+            ;
+        }
+    }
+
+    private static class BiomeTagProvider extends FabricTagProvider<Biome>
+    {
+        /**
+         * Constructs a new {@link FabricTagProvider} with the default computed path.
+         *
+         * <p>Common implementations of this class are provided.
+         *
+         * @param output           the {@link FabricDataOutput} instance
+         * @param registriesFuture the backing registry for the tag type
+         */
+        public BiomeTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+            super(output, RegistryKeys.BIOME, registriesFuture);
+        }
+
+        @Override
+        protected void configure(RegistryWrapper.WrapperLookup arg) {
+            getOrCreateTagBuilder(RebalanceBiomeTags.SCULK_BIOME)
+                    .add(
+                            BiomeKeys.DEEP_DARK
+                    )
             ;
         }
     }
