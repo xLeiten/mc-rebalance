@@ -1,17 +1,11 @@
 package me.xleiten.rebalance.core.components.hardcore_player_respawn.stages;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.*;
-import me.xleiten.rebalance.api.config.Option;
-import me.xleiten.rebalance.api.config.types.ArrayType;
-import me.xleiten.rebalance.api.game.world.text_display.StaticTextDisplay;
 import me.xleiten.rebalance.api.game.world.staged_process.Either;
 import me.xleiten.rebalance.api.game.world.staged_process.Stage;
+import me.xleiten.rebalance.api.game.world.text_display.StaticTextDisplay;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.DisplayEntity;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
@@ -36,26 +30,15 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-
-import static me.xleiten.rebalance.Settings.HARDCORE_PLAYER_RESPAWN;
 
 public final class AwaitingStage extends Stage<RitualContext>
 {
-    private static final Option<Integer> PLAYER_SEARCH_COOLDOWN = HARDCORE_PLAYER_RESPAWN.option("player-search-cooldown", 10);
-    private static final Option<IngredientsInfo> INGREDIENTS = HARDCORE_PLAYER_RESPAWN.option("Ingredients",
-            new IngredientsInfo()
-                    .addIngredient(Items.ROTTEN_FLESH, 10)
-                    .addIngredient(Items.BONE, 3)
-    );
-
     private final float playerWidth = context.player.getDimensions(context.player.getPose()).width * 0.8F;
     private final RegistryEntry<SoundEvent> TELEPORT_SOUND = RegistryEntry.of(SoundEvents.ENTITY_ENDERMAN_TELEPORT);
 
-    private int searchPlayerTicks = PLAYER_SEARCH_COOLDOWN.getValue();
+    private int searchPlayerTicks = context.component.PLAYER_SEARCH_COOLDOWN.getValue();
     private final ImmutableMap<RitualIngredient, StaticTextDisplay> ingredients;
     private ServerPlayerEntity lastActive;
 
@@ -95,8 +78,8 @@ public final class AwaitingStage extends Stage<RitualContext>
                 return Either.left(new SummoningStage(context, lastActive));
             } else {
                 if (searchPlayerTicks-- <= 0) {
-                    lastActive = (ServerPlayerEntity) context.world.getClosestPlayer(context.deadBody, RitualContext.RADIUS.getValue());
-                    searchPlayerTicks = PLAYER_SEARCH_COOLDOWN.getValue();
+                    lastActive = (ServerPlayerEntity) context.world.getClosestPlayer(context.deadBody, context.component.RADIUS.getValue());
+                    searchPlayerTicks = context.component.PLAYER_SEARCH_COOLDOWN.getValue();
                 }
             }
         }
@@ -111,7 +94,7 @@ public final class AwaitingStage extends Stage<RitualContext>
     private ImmutableMap<RitualIngredient, StaticTextDisplay> createIngredientDisplays(Vec3d position) {
         var map = ImmutableMap.<RitualIngredient, StaticTextDisplay>builder();
         var startPos = position;
-        for (Map.Entry<Identifier, Integer> ingredientInfo : INGREDIENTS.getValue().getInfo()) {
+        for (Map.Entry<Identifier, Integer> ingredientInfo : context.component.INGREDIENTS.getValue().getInfo()) {
             Item item = Registries.ITEM.get(ingredientInfo.getKey());
             if (item == Items.AIR) continue;
             var ingredient = new RitualIngredient(item, ingredientInfo.getValue());
@@ -160,15 +143,13 @@ public final class AwaitingStage extends Stage<RitualContext>
         }
     }
 
-    private static final class RitualIngredient
-    {
+    private static final class RitualIngredient {
         public final Item item;
         public final int amountNeeded;
 
         private int current = 0;
 
-        RitualIngredient(Item item, int amountNeeded)
-        {
+        RitualIngredient(Item item, int amountNeeded) {
             this.item = item;
             this.amountNeeded = amountNeeded;
         }
@@ -193,66 +174,6 @@ public final class AwaitingStage extends Stage<RitualContext>
         public void increment() {
             if (this.current < amountNeeded)
                 this.current++;
-        }
-    }
-
-    public static final class IngredientsInfo
-    {
-        private final Map<Identifier, Integer> info;
-
-        IngredientsInfo() {
-            this.info = new HashMap<>();
-        }
-
-        IngredientsInfo(Map<Identifier, Integer> ingredients)
-        {
-            this.info = ingredients;
-        }
-
-        public IngredientsInfo addIngredient(Item item, int amount) {
-            this.info.putIfAbsent(Registries.ITEM.getId(item), amount);
-            return this;
-        }
-
-        public Set<Map.Entry<Identifier, Integer>> getInfo() {
-            return info.entrySet();
-        }
-
-        public static class Type extends ArrayType<IngredientsInfo>
-        {
-
-            @Override
-            public @NotNull String getTypeKey() {
-                return "II";
-            }
-
-            @Override
-            public @NotNull Class<IngredientsInfo> getTypeClass() {
-                return IngredientsInfo.class;
-            }
-
-            @Override
-            public @NotNull IngredientsInfo deserialize(JsonArray array, JsonDeserializationContext context) {
-                Map<Identifier, Integer> data = new HashMap<>();
-                for (JsonElement element: array) {
-                    if (element instanceof JsonObject object)
-                        data.put(Identifier.tryParse(object.get("item").getAsString()), object.get("amount").getAsInt());
-                }
-                return new IngredientsInfo(data);
-            }
-
-            @NotNull
-            @Override
-            public JsonArray serialize(IngredientsInfo ingredients, JsonSerializationContext context) {
-                var array = new JsonArray();
-                for (Map.Entry<Identifier, Integer> entry: ingredients.info.entrySet()) {
-                    var object = new JsonObject();
-                    object.addProperty("item", entry.getKey().toString());
-                    object.addProperty("amount", entry.getValue());
-                    array.add(object);
-                }
-                return array;
-            }
         }
     }
 }

@@ -1,9 +1,9 @@
 package me.xleiten.rebalance.core.components.hardcore_player_respawn.stages;
 
-import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.SkinHolder;
 import me.xleiten.rebalance.api.game.world.npc.HumanEntity;
 import me.xleiten.rebalance.api.game.world.staged_process.StageContext;
+import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -14,15 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static me.xleiten.rebalance.Settings.HARDCORE_PLAYER_RESPAWN;
-
 public final class RitualContext implements StageContext
 {
-    static final Option<Integer> RITUAL_TIME = HARDCORE_PLAYER_RESPAWN.option("ritual-time", 20 * 15);
-    static final Option<Integer> RADIUS = HARDCORE_PLAYER_RESPAWN.option("ritual-safe-radius", 3);
-    static final Option<Float> XP_NEEDED = HARDCORE_PLAYER_RESPAWN.option("xp-needed", 300f);
-    static final int RADIUS_SQUARED = RADIUS.getValue() * RADIUS.getValue();
-
+    public final HardcorePlayerRespawn component;
     public final UUID playerId;
     public final ServerPlayerEntity player;
     public final HumanEntity deadBody;
@@ -30,7 +24,7 @@ public final class RitualContext implements StageContext
     public final ServerWorld world;
     public final Random random;
 
-    public RitualContext(@NotNull ServerPlayerEntity player)
+    public RitualContext(@NotNull ServerPlayerEntity player, @NotNull HardcorePlayerRespawn component)
     {
         this.player = player;
         this.playerId = player.getUuid();
@@ -38,6 +32,7 @@ public final class RitualContext implements StageContext
         this.world = player.getServerWorld();
         this.position = player.getPos().add(0, 0.5, 0);
         this.random = world.getRandom();
+        this.component = component;
     }
 
     private HumanEntity createDeadBody(ServerPlayerEntity of) {
