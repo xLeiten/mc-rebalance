@@ -3,7 +3,7 @@ package me.xleiten.rebalance.core.mixins.world.entity.combat.passive_health_rege
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
-import me.xleiten.rebalance.api.game.world.entity.tags.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
 import me.xleiten.rebalance.util.math.IntRange;
 import me.xleiten.rebalance.util.math.RandomHelper;
 import me.xleiten.rebalance.util.math.Range;

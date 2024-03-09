@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.api.game.world.entity.tags;
+package me.xleiten.rebalance.api.game.world.entity.tag;
 
 import me.xleiten.rebalance.Rebalance;
 import net.minecraft.entity.EntityType;

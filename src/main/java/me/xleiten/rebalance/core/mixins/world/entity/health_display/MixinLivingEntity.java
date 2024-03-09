@@ -4,7 +4,7 @@ import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
 import me.xleiten.rebalance.api.game.world.entity.HealthDisplay;
-import me.xleiten.rebalance.api.game.world.entity.tags.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
