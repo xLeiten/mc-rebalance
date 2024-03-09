@@ -21,14 +21,14 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
-import static me.xleiten.rebalance.Settings.PLAYER_SETTINGS;
+import static me.xleiten.rebalance.Settings.SHIELD_REWORK;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends PlayerEntity
 {
     @Shadow public abstract void sendMessage(Text message);
 
-    @Unique private static final Option<IntRange> SHIELD_EXPLOSION_COOLDOWN = PLAYER_SETTINGS.option("on-explosion-shield-cooldown", Range.create(60, 100));
+    @Unique private static final Option<IntRange> SHIELD_EXPLOSION_COOLDOWN = SHIELD_REWORK.option("on-explosion-cooldown-by-damage", Range.create(60, 100));
 
     protected MixinServerPlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile)
     {

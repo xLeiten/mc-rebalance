@@ -25,13 +25,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.xleiten.rebalance.Settings.DAMAGE_MULTIPLIERS;
+import static me.xleiten.rebalance.Settings.SHIELD_REWORK;
 
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity
 {
-    @Unique private static final Option<Float> SHIELD_EXPLOSION_ABSORPTION = DAMAGE_MULTIPLIERS.option("explosion-shield-absorption", 0.90f);
-    @Unique private static final Option<Float> SHIELD_BLAST_RESISTANCE_MULT_PER_LEVEL = DAMAGE_MULTIPLIERS.option("shield-blast-resistance-mult-per-level", 0.15f);
+    @Unique private static final Option<Float> SHIELD_EXPLOSION_ABSORPTION = SHIELD_REWORK.option("explosion-absorption-percent", 0.90f);
+    @Unique private static final Option<Float> SHIELD_BLAST_RESISTANCE_MULT_PER_LEVEL = SHIELD_REWORK.option("blast-resistance-absorption-percent-per-level", 0.15f);
 
     @Shadow public abstract Hand getActiveHand();
     @Shadow protected ItemStack activeItemStack;
@@ -50,7 +50,7 @@ public abstract class MixinLivingEntity extends Entity
             argsOnly = true,
             index = 2
     )
-    protected float modifyDamageByBlastResistance(float value, @Local DamageSource source) {
+    protected float modifyDamageByBlastResistance(float value, @Local(argsOnly = true) DamageSource source) {
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             var level = EnchantmentHelper.getLevel(Enchantments.BLAST_PROTECTION, activeItemStack);
             return level > 0 ? (value * (1 - (level * SHIELD_BLAST_RESISTANCE_MULT_PER_LEVEL.getValue()))) : value;
@@ -68,7 +68,7 @@ public abstract class MixinLivingEntity extends Entity
             argsOnly = true,
             index = 2
     )
-    protected float tryAbsorbExplosionDamage(float value, @Local(ordinal = 2) float g, @Local DamageSource source) {
+    protected float tryAbsorbExplosionDamage(float value, @Local(ordinal = 2) float g, @Local(argsOnly = true) DamageSource source) {
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             return (1 - SHIELD_EXPLOSION_ABSORPTION.getValue()) * g;
         }
@@ -79,7 +79,7 @@ public abstract class MixinLivingEntity extends Entity
             method = "damageShield",
             at = @At("HEAD")
     )
-    protected void writeShieldDamageLogic(float amount, CallbackInfo ci) {
+    protected void addShieldDamageLogic(float amount, CallbackInfo ci) {
         if (this.activeItemStack.isOf(Items.SHIELD)) {
             if (amount >= ShieldItem.MIN_DAMAGE_AMOUNT_TO_BREAK) {
                 int i = 1 + MathHelper.floor(amount);
