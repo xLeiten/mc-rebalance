@@ -7,6 +7,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.xleiten.rebalance.Rebalance;
 import me.xleiten.rebalance.api.component.Component;
+import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.SkinData;
 import me.xleiten.rebalance.api.game.world.entity.SkinHolder;
 import me.xleiten.rebalance.api.game.world.npc.HumanEntity;
@@ -29,13 +30,14 @@ import java.util.concurrent.CompletableFuture;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public final class SkinManager extends Component<Rebalance>
+public final class OfflineSkins extends Component<Rebalance>
 {
+    private final Option<String> CACHE_FOLDER_PATH = settings.option("cache-folder-path", "players-skin-cache");
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Path playersCacheDir = Path.of("players-skin-cache");
+    private final Path playersCacheDir = Path.of(CACHE_FOLDER_PATH.getValue());
 
-    public SkinManager(@NotNull Rebalance mod) {
-        super("SkinManager", mod);
+    public OfflineSkins(@NotNull Rebalance mod) {
+        super("Offline skins", mod);
 
         createDirectory();
 
