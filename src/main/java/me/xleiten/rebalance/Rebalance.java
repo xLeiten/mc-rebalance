@@ -1,5 +1,6 @@
 package me.xleiten.rebalance;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
@@ -10,10 +11,14 @@ import me.xleiten.rebalance.core.components.SkinManager;
 import me.xleiten.rebalance.core.components.TabServerInfo;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.AwaitingStage;
+import me.xleiten.rebalance.util.StringUtils;
 import me.xleiten.rebalance.util.math.DoubleRange;
 import me.xleiten.rebalance.util.math.FloatRange;
 import me.xleiten.rebalance.util.math.IntRange;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +32,9 @@ import static net.minecraft.server.command.CommandManager.literal;
 public final class Rebalance extends ServerMod
 {
     public static String MOD_ID = "rebalance";
-    public static final Logger LOGGER = LoggerFactory.getLogger("Rebalance");
 
-    public static final DynamicStorage CONFIG = DynamicStorage.create("rebalance-mod")
+    public static final Logger LOGGER = LoggerFactory.getLogger(StringUtils.capitalize(MOD_ID));
+    public static final DynamicStorage CONFIG = DynamicStorage.create(MOD_ID)
             .addTypeAdapter(new IntRange.Type())
             .addTypeAdapter(new DoubleRange.Type())
             .addTypeAdapter(new FloatRange.Type())
@@ -46,18 +51,21 @@ public final class Rebalance extends ServerMod
 
     @Override
     protected void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(literal("storage").requires(source -> source.hasPermissionLevel(4))
-                    .then(literal("save").then(argument("delete-unused", BoolArgumentType.bool()).executes(context -> {
-                        CompletableFuture.runAsync(() -> CONFIG.save(BoolArgumentType.getBool(context, "delete-unused"), result -> sendMessage("Результат сохранения: " + result, context)));
-                        return 1;
-                    })))
-                    .then(literal("load").executes(context -> {
-                        CompletableFuture.runAsync(() -> CONFIG.load(result -> sendMessage("Результат загрузки: " + result, context)));
-                        return 1;
-                    }))
-            );
-        });
+
+    }
+
+    @Override
+    protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
+        dispatcher.register(literal("storage").requires(source -> source.hasPermissionLevel(4))
+                .then(literal("save").then(argument("delete-unused", BoolArgumentType.bool()).executes(context -> {
+                    CompletableFuture.runAsync(() -> CONFIG.save(BoolArgumentType.getBool(context, "delete-unused"), result -> sendMessage("Результат сохранения: " + result, context)));
+                    return 1;
+                })))
+                .then(literal("load").executes(context -> {
+                    CompletableFuture.runAsync(() -> CONFIG.load(result -> sendMessage("Результат загрузки: " + result, context)));
+                    return 1;
+                }))
+        );
     }
 
     @Override
