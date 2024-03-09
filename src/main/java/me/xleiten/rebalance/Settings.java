@@ -2,15 +2,15 @@ package me.xleiten.rebalance;
 
 import me.xleiten.rebalance.api.config.Section;
 
-import static me.xleiten.rebalance.Rebalance.CONFIG;
+import static me.xleiten.rebalance.Rebalance.MAIN_STORAGE;
 
 public final class Settings
 {
     // Server
-    public static final Section SERVER_SETTINGS = CONFIG.section("Server");
+    public static final Section SERVER_SETTINGS = MAIN_STORAGE.section("Server");
 
     // World
-    public static final Section WORLD_SETTINGS = CONFIG.section("World");
+    public static final Section WORLD_SETTINGS = MAIN_STORAGE.section("World");
 
     // Entities
     public static final Section ENTITY_SETTINGS = WORLD_SETTINGS.section("Entities");
@@ -47,8 +47,11 @@ public final class Settings
     public static final Section ARMOR_BUFFS = ITEMS.section("armor");
 
     // Mechanics
-    public static final Section HARDCORE_WORLD_RESET = CONFIG.section("Hardcore World Reset");
-    public static final Section HARDCORE_PLAYER_RESPAWN = CONFIG.section("Hardcore Player Respawn");
-    public static final Section TAB_SERVER_INFO = CONFIG.section("Tab Server Info");
-
+    public static final Section HARDCORE_WORLD_RESET = MAIN_STORAGE.section("Hardcore world reset");
+    public static final Section HARDCORE_PLAYER_RESPAWN = MAIN_STORAGE.section("Hardcore player respawn");
+    public static final Section TAB_SERVER_INFO = MAIN_STORAGE.section("Tab server info");
+    public static final Section SLOWDOWN_BY_HEALTH = MAIN_STORAGE.section("Slowdown by health");
+    public static final Section PASSIVE_HEALTH_REGENERATION = MAIN_STORAGE.section("Passive health regeneration");
+    public static final Section SHIELD_REWORK = MAIN_STORAGE.section("Shield rework");
+    public static final Section HEALTH_DISPLAY = MAIN_STORAGE.section("Health display");
 }

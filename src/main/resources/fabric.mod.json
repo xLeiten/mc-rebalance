@@ -9,13 +9,13 @@
   "environment": "server",
   "entrypoints": {
     "fabric-datagen": [
-      "me.xleiten.rebalance.core.datagen.ModDataGenerator"
+      "me.xleiten.rebalance.core.datagen.RebalanceDataGenerator"
     ],
     "server": [
       "me.xleiten.rebalance.Rebalance"
     ],
     "mm:early_risers": [
-      "me.xleiten.rebalance.core.asm.ModFabricASMEntry"
+      "me.xleiten.rebalance.core.asm.RebalanceFabricASMEntry"
     ]
   },
   "mixins": [

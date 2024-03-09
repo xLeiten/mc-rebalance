@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.api.game.server.security;
+package me.xleiten.rebalance.core.game;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
@@ -8,10 +8,10 @@ import me.xleiten.rebalance.api.config.types.ObjectType;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-public record ServerMetadata(String version, Text motd, int protocol, int maxPlayers, int onlinePlayers,
-                             String serverIconPath) {
-
-    public static class Type extends ObjectType<ServerMetadata> {
+public record ServerMetadata(String version, Text motd, int protocol, int maxPlayers, int onlinePlayers, String serverIconPath)
+{
+    public static class Type extends ObjectType<ServerMetadata>
+    {
 
         @Override
         public @NotNull String getTypeKey() {
@@ -48,5 +48,4 @@ public record ServerMetadata(String version, Text motd, int protocol, int maxPla
             return object;
         }
     }
-
 }

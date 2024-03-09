@@ -4,7 +4,7 @@ import com.chocohead.mm.api.ClassTinkerers;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
 
-public final class ModFabricASMEntry implements Runnable
+public final class RebalanceFabricASMEntry implements Runnable
 {
     @Override
     public void run() {

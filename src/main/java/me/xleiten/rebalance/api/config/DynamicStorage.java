@@ -18,6 +18,8 @@ public final class DynamicStorage
     private boolean strictMode = false;
     Logger logger;
 
+    private boolean clearUnusedOnSave = false;
+
     private DynamicStorage(String name, Path fileDir) {
         this.name = name;
         this.logger = LoggerFactory.getLogger("Config(" + name + ")");
@@ -67,15 +69,20 @@ public final class DynamicStorage
         return load(null);
     }
 
-    public void save(boolean clearUnused, Consumer<ActionResult> callback) {
-        if (clearUnused) {
+    public DynamicStorage clearUnusedOnSave(boolean clearUnused) {
+        this.clearUnusedOnSave = clearUnused;
+        return this;
+    }
+
+    public void save(Consumer<ActionResult> callback) {
+        if (clearUnusedOnSave) {
             this.root.clearUnusedEntries(true);
         }
         loader.save(callback);
     }
 
-    public void save(boolean clearUnused) {
-        save(clearUnused, null);
+    public void save() {
+        save(null);
     }
 
     public <T> Option<T> option(@NotNull String path, @NotNull T defaultValue) {
@@ -84,6 +91,11 @@ public final class DynamicStorage
 
     public Section section(@NotNull String path) {
         return root.section(path);
+    }
+
+    public DynamicStorage addTo(@NotNull StorageManager manager) {
+        manager.addStorage(this);
+        return this;
     }
 
     public Section getRoot() {

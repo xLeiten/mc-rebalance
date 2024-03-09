@@ -1,11 +1,9 @@
 package me.xleiten.rebalance;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
-import me.xleiten.rebalance.api.config.types.StringType;
-import me.xleiten.rebalance.api.game.server.security.ServerMetadata;
+import me.xleiten.rebalance.core.game.ServerMetadata;
 import me.xleiten.rebalance.core.components.AutoHardcoreWorldReset;
 import me.xleiten.rebalance.core.components.SitManager;
 import me.xleiten.rebalance.core.components.SkinManager;
@@ -16,10 +14,10 @@ import me.xleiten.rebalance.util.StringUtils;
 import me.xleiten.rebalance.util.math.DoubleRange;
 import me.xleiten.rebalance.util.math.FloatRange;
 import me.xleiten.rebalance.util.math.IntRange;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.CompletableFuture;
 
 import static me.xleiten.rebalance.util.Messenger.sendMessage;
-import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class Rebalance extends ServerMod
@@ -35,7 +32,9 @@ public final class Rebalance extends ServerMod
     public static String MOD_ID = "rebalance";
 
     public static final Logger LOGGER = LoggerFactory.getLogger(StringUtils.capitalize(MOD_ID));
-    public static final DynamicStorage CONFIG = DynamicStorage.create(MOD_ID)
+    //public static final StorageManager STORAGE_MANAGER = new StorageManager();
+    public static final DynamicStorage MAIN_STORAGE = DynamicStorage.create(MOD_ID)
+            //.addTo(STORAGE_MANAGER)
             .addTypeAdapters(
                     new IntRange.Type(),
                     new DoubleRange.Type(),
@@ -60,21 +59,39 @@ public final class Rebalance extends ServerMod
     @Override
     protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
         dispatcher.register(literal("storage").requires(source -> source.hasPermissionLevel(4))
-                .then(literal("save").then(argument("delete-unused", BoolArgumentType.bool()).executes(context -> {
-                    CompletableFuture.runAsync(() -> CONFIG.save(BoolArgumentType.getBool(context, "delete-unused"), result -> sendMessage("Результат сохранения: " + result, context)));
-                    return 1;
-                })))
                 .then(literal("load").executes(context -> {
-                    CompletableFuture.runAsync(() -> CONFIG.load(result -> sendMessage("Результат загрузки: " + result, context)));
+                    CompletableFuture.runAsync(() -> storage.load(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
+                    return 1;
+                }))
+                .then(literal("save").executes(context -> {
+                    CompletableFuture.runAsync(() -> storage.save(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
                     return 1;
                 }))
         );
+
+       /* dispatcher.register(literal("storage").then(argument("name", StringArgumentType.word())
+                .then(literal("save")
+                        .executes(context -> {
+                            STORAGE_MANAGER.getStorage(StringArgumentType.getString(context, "name")).ifPresent(storage1 -> {
+                                CompletableFuture.runAsync(() -> {
+                                    storage1.save(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true))
+                                });
+                            });
+                            return 1;
+                        })
+                ))
+        ));*/
     }
 
     @Override
     public @NotNull DynamicStorage getStorage() {
-        return CONFIG;
+        return MAIN_STORAGE;
     }
+
+    /*@Override
+    public @NotNull StorageManager getStorageManager() {
+        return STORAGE_MANAGER;
+    }*/
 
     @Override
     public @NotNull Logger getLogger() {

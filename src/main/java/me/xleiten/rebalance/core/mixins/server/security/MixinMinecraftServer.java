@@ -21,7 +21,7 @@ import static me.xleiten.rebalance.Settings.SERVER_SETTINGS;
 public abstract class MixinMinecraftServer implements MinecraftServer
 {
     @Unique private static final Option<Boolean> HIDE_INFORMATION = SERVER_SETTINGS.option("hide-information", true);
-    @Unique private static final Option<me.xleiten.rebalance.api.game.server.security.ServerMetadata> SERVER_METADATA = SERVER_SETTINGS.option("metadata", new me.xleiten.rebalance.api.game.server.security.ServerMetadata("bruh", Text.of("A Minecraft Server"), 0, 20, 0, "server-icon.png"));
+    @Unique private static final Option<me.xleiten.rebalance.core.game.ServerMetadata> SERVER_METADATA = SERVER_SETTINGS.option("metadata", new me.xleiten.rebalance.core.game.ServerMetadata("bruh", Text.of("A Minecraft Server"), 0, 20, 0, "server-icon.png"));
 
     @Shadow
     public abstract boolean shouldEnforceSecureProfile();
