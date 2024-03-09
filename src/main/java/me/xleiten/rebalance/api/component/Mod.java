@@ -1,9 +1,10 @@
 package me.xleiten.rebalance.api.component;
 
-import me.xleiten.rebalance.api.component.events.*;
+import me.xleiten.rebalance.api.component.events.ModEvent;
+import me.xleiten.rebalance.api.component.events.ModEvents;
+import me.xleiten.rebalance.api.component.events.ModInitializeEvent;
 import me.xleiten.rebalance.api.config.DynamicStorage;
 import me.xleiten.rebalance.api.config.Section;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -20,8 +21,6 @@ public abstract class Mod
 
     protected final void initialize() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> storage.save(false)));
-        ServerWorldEvents.LOAD.register((server, world) -> call(ModEvents.WORLD, new ServerWorldEvent(world, server, ServerWorldEvent.WorldState.LOAD)));
-        ServerWorldEvents.UNLOAD.register((server, world) -> call(ModEvents.WORLD, new ServerWorldEvent(world, server, ServerWorldEvent.WorldState.UNLOAD)));
         call(ModEvents.MOD, new ModInitializeEvent(this));
         onInitialize();
     }
