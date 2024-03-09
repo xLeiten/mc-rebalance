@@ -4,6 +4,7 @@ import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
 import me.xleiten.rebalance.api.game.world.entity.HealthDisplay;
+import me.xleiten.rebalance.api.game.world.entity.tags.ModEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +27,7 @@ public abstract class MixinLivingEntity extends Entity implements Living
 {
     @Shadow protected abstract void initDataTracker();
 
-    @Unique private static final Option<Integer> MAX_HEALTH_DISPLAY_TICKS = Settings.LIVING_ENTITY_SETTINGS.option("max-health-display-ticks", 120);
+    @Unique private static final Option<Integer> MAX_HEALTH_DISPLAY_TICKS = Settings.HEALTH_DISPLAY.option("display-ticks", 120);
     @Unique private final HealthDisplay healthDisplay = new HealthDisplay((LivingEntity) (Object) this);
 
     protected MixinLivingEntity(EntityType<?> type, World world)
@@ -50,7 +51,7 @@ public abstract class MixinLivingEntity extends Entity implements Living
             )
     )
     public void showHealth(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (source.getAttacker() instanceof PlayerEntity)
+        if (source.getAttacker() instanceof PlayerEntity && !getType().isIn(ModEntityTypeTags.WITHOUT_HEALTH_DISPLAY))
             healthDisplay.show(MAX_HEALTH_DISPLAY_TICKS.getValue());
     }
 

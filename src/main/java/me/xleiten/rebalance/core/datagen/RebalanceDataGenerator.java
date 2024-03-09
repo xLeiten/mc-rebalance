@@ -5,46 +5,27 @@ import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 
 import java.util.concurrent.CompletableFuture;
 
-public final class ModDataGenerator implements DataGeneratorEntrypoint
+public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
 {
-    private ModDataGenerator() {}
+    public RebalanceDataGenerator() {}
 
     @Override
-    public void onInitializeDataGenerator(FabricDataGenerator generator) {
+    public void onInitializeDataGenerator(FabricDataGenerator generator)
+    {
         FabricDataGenerator.Pack pack = generator.createPack();
-        pack.addProvider(EntityTagProvider::new);
         pack.addProvider(EntityTagProvider::new);
     }
 
-    /*private static class BlockTagProvider extends FabricTagProvider.BlockTagProvider
-    {
-        public BlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
-            super(output, registriesFuture);
-        }
-
-        @Override
-        protected void configure(RegistryWrapper.WrapperLookup arg) {
-            getOrCreateTagBuilder(ThePainBlockTags.CANNOT_BE_BROKEN_BY_MOB)
-                    .forceAddTag(BlockTags.WOOL_CARPETS)
-                    .forceAddTag(BlockTags.TRAPDOORS)
-                    .forceAddTag(BlockTags.ALL_SIGNS)
-                    .forceAddTag(BlockTags.FLOWERS)
-                    .forceAddTag(BlockTags.FLOWER_POTS)
-                    .add(Blocks.LADDER);
-        }
-    }*/
-
     private static class EntityTagProvider extends FabricTagProvider.EntityTypeTagProvider
     {
-        public EntityTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+        public EntityTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture)
+        {
             super(output, completableFuture);
         }
 
@@ -54,20 +35,23 @@ public final class ModDataGenerator implements DataGeneratorEntrypoint
                     .add(
                             EntityType.WITHER,
                             EntityType.ENDER_DRAGON
-                    );
+                    )
+            ;
 
             getOrCreateTagBuilder(ModEntityTypeTags.GUARDIANS)
                     .add(
                             EntityType.GUARDIAN,
                             EntityType.ELDER_GUARDIAN
-                    );
+                    )
+            ;
 
             getOrCreateTagBuilder(ModEntityTypeTags.GOLEMS)
                     .add(
                             EntityType.IRON_GOLEM,
                             EntityType.SNOW_GOLEM,
                             EntityType.SHULKER
-                    );
+                    )
+            ;
 
             getOrCreateTagBuilder(ModEntityTypeTags.CANNOT_REGEN_HEALTH)
                     .forceAddTag(EntityTypeTags.SKELETONS)
@@ -84,11 +68,13 @@ public final class ModDataGenerator implements DataGeneratorEntrypoint
                             EntityType.ZOMBIE_HORSE,
                             EntityType.PHANTOM,
                             EntityType.GIANT
-                    );
+                    )
+            ;
 
             getOrCreateTagBuilder(ModEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)
                     .addTag(ModEntityTypeTags.BOSSES)
-                    .addTag(ModEntityTypeTags.GUARDIANS);
+                    .addTag(ModEntityTypeTags.GUARDIANS)
+            ;
 
             getOrCreateTagBuilder(ModEntityTypeTags.CAN_MINE_BLOCKS)
                     .add(
@@ -100,7 +86,12 @@ public final class ModDataGenerator implements DataGeneratorEntrypoint
                             EntityType.PIGLIN,
                             EntityType.STRAY,
                             EntityType.ENDERMAN
-                    );
+                    )
+            ;
+
+            getOrCreateTagBuilder(ModEntityTypeTags.WITHOUT_HEALTH_DISPLAY)
+                    .addTag(ModEntityTypeTags.BOSSES)
+            ;
         }
     }
 }
