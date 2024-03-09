@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class SitManager extends Component<Rebalance>
 {
-    private static final ConcurrentHashMap<UUID, SittingPlayer> PLAYERS_SITTING = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, SittingPlayer> PLAYERS_SITTING = new ConcurrentHashMap<>();
 
     public SitManager(@NotNull Rebalance mod)
     {
@@ -58,16 +58,16 @@ public final class SitManager extends Component<Rebalance>
         });
     }
 
-    private static boolean isValidState(BlockState state) {
+    private boolean isValidState(BlockState state) {
         return (state.isIn(BlockTags.SLABS) && state.get(SlabBlock.TYPE) == SlabType.BOTTOM) ||
                 (state.isIn(BlockTags.STAIRS) && state.get(StairsBlock.HALF) == BlockHalf.BOTTOM);
     }
 
-    private static boolean isThereSpace(World world, BlockPos clickedBlockPos) {
+    private boolean isThereSpace(World world, BlockPos clickedBlockPos) {
         return world.isAir(clickedBlockPos.up()) && world.isAir(clickedBlockPos.up(1));
     }
 
-    private static void makePlayerSit(PlayerEntity player, BlockPos pos) {
+    private void makePlayerSit(PlayerEntity player, BlockPos pos) {
         var playerId = player.getUuid();
         if (player.hasVehicle() || PLAYERS_SITTING.containsKey(playerId)) return;
         if (player.getPos().add(0, 0.75, 0).distanceTo(pos.toCenterPos()) > 1.75) return;
@@ -89,7 +89,7 @@ public final class SitManager extends Component<Rebalance>
         PLAYERS_SITTING.putIfAbsent(playerId, new SittingPlayer(player, vehicle, pos, world));
     }
 
-    private static void makePlayerStandUp(SittingPlayer data) {
+    private void makePlayerStandUp(SittingPlayer data) {
         data.vehicle.discard();
         PLAYERS_SITTING.remove(data.player.getUuid());
     }

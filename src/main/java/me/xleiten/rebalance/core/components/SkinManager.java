@@ -105,8 +105,9 @@ public final class SkinManager extends Component<Rebalance>
         });
     }
 
-    public static CompletableFuture<Property> getSkinInfo(String playerName) {
+    public static CompletableFuture<Property> getSkinInfo(@NotNull String playerName) {
         return CompletableFuture.supplyAsync(() -> {
+            if (playerName.isEmpty()) throw new IllegalArgumentException("Player name cannot be empty");
             try (var uuidService = new BufferedReader(new InputStreamReader(new URL("https://api.mojang.com/users/profiles/minecraft/" + playerName).openStream()))) {
                 var uuid = JsonParser.parseReader(uuidService).getAsJsonObject().get("id").toString().replaceAll("\"", "");
                 try (var profileService = new BufferedReader(new InputStreamReader(new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false").openStream()))) {
