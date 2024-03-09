@@ -3,13 +3,13 @@ package me.xleiten.rebalance;
 import com.mojang.brigadier.CommandDispatcher;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
-import me.xleiten.rebalance.core.game.ServerMetadata;
 import me.xleiten.rebalance.core.components.AutoHardcoreWorldReset;
 import me.xleiten.rebalance.core.components.SitManager;
 import me.xleiten.rebalance.core.components.SkinManager;
 import me.xleiten.rebalance.core.components.TabServerInfo;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.AwaitingStage;
+import me.xleiten.rebalance.core.game.ServerMetadata;
 import me.xleiten.rebalance.util.StringUtils;
 import me.xleiten.rebalance.util.math.DoubleRange;
 import me.xleiten.rebalance.util.math.FloatRange;
@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CompletableFuture;
 
-import static me.xleiten.rebalance.util.Messenger.sendMessage;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class Rebalance extends ServerMod

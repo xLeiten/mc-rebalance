@@ -14,8 +14,6 @@ public final class Settings
 
     // Entities
     public static final Section ENTITY_SETTINGS = WORLD_SETTINGS.section("Entities");
-    public static final Section LIVING_ENTITY_SETTINGS = WORLD_SETTINGS.section("Living Entity");
-    public static final Section ENTITY_TAGS = WORLD_SETTINGS.section("Entity Tags");
 
     // Mobs
     public static final Section MOB_SETTINGS = ENTITY_SETTINGS.section("Mobs");

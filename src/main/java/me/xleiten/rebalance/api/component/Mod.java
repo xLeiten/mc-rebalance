@@ -5,7 +5,6 @@ import me.xleiten.rebalance.api.component.events.ModEvents;
 import me.xleiten.rebalance.api.component.events.ModInitializeEvent;
 import me.xleiten.rebalance.api.config.DynamicStorage;
 import me.xleiten.rebalance.api.config.Section;
-import me.xleiten.rebalance.api.config.StorageManager;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
