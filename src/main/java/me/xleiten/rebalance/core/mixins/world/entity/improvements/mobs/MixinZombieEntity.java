@@ -76,7 +76,7 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     @Unique protected boolean shouldAlertOthers = SHOULD_ALERT_OTHERS.getValue();
     @Unique protected int spawnReinforcementCooldown = REINFORCEMENT_COOLDOWN.getValue();
 
-    @Unique protected final TargetPredicate onSpawnTargetPredicate = TargetPredicate.createAttackable().ignoreVisibility().setPredicate(entity -> !((PlayerEntity) entity).getAbilities().creativeMode);
+    @Unique protected final TargetPredicate TARGET_PREDICATE = TargetPredicate.createAttackable().ignoreVisibility().setPredicate(entity -> !((PlayerEntity) entity).getAbilities().creativeMode);
 
     protected MixinZombieEntity(EntityType<? extends HostileEntity> entityType, World world)
     {
@@ -170,7 +170,7 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
 
     /**
      * @author xLeiten
-     * @reason don't like it
+     * @reason cringe
      */
     @Overwrite
     public void initEquipment(Random random, LocalDifficulty localDifficulty) {
@@ -326,8 +326,7 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     @Unique
     protected void searchForTarget() {
         if (this.getTarget() != null || !chance(random, SEARCH_TARGET_ON_SPAWN_CHANCE.getValue()) || !cringeMod$canAlertOthers()) return;
-        var followRange = AttributeHelper.getValue(this, EntityAttributes.GENERIC_FOLLOW_RANGE, 35);
-        var player = getWorld().getClosestPlayer(onSpawnTargetPredicate.setBaseMaxDistance(followRange * 0.7), this);
+        var player = getWorld().getClosestPlayer(TARGET_PREDICATE.setBaseMaxDistance(getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7), this);
         if (player != null) {
             this.setTarget(player);
         }
@@ -335,13 +334,16 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
 
     @Unique
     protected void alertOthers() {
-        if (getTarget() == null || isSilent()) return;
-        var followRange = AttributeHelper.getValue(this, EntityAttributes.GENERIC_FOLLOW_RANGE, 35) * 0.7;
+        var target = getTarget();
+        if (target == null || isSilent()) return;
+        var followRange = getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7;
         var zombies = getWorld().getEntitiesByClass(net.minecraft.entity.mob.ZombieEntity.class, Box.of(getPos(), followRange, followRange / 1.5, followRange), mob -> mob.getTarget() == null && !(mob instanceof ZombifiedPiglinEntity) && !mob.isSilent());
         var chance = ALERT_OTHERS_CHANCE.getValue() + zombies.size() * 3;
-        for (net.minecraft.entity.mob.ZombieEntity zombie : zombies)
-            if (chance(random, chance))
-                zombie.setTarget(getTarget());
+        for (net.minecraft.entity.mob.ZombieEntity zombie : zombies) {
+            if (chance(random, chance) && TARGET_PREDICATE.setBaseMaxDistance(followRange).test(zombie, target)) {
+                zombie.setTarget(target);
+            }
+        }
     }
 
     @Unique
@@ -361,5 +363,4 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     protected void resetAlertCooldown() {
         this.alertOthersCooldown = range(random, ALERT_OTHERS_COOLDOWN.getValue());
     }
-
 }
