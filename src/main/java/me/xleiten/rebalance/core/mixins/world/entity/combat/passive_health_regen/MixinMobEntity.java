@@ -21,10 +21,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity extends LivingEntity implements Living
 {
-    @Unique private static final Option<Boolean> HEALTH_REGENERATION = Settings.MOB_SETTINGS.option("can-regen-health", true);
-    @Unique private static final Option<IntRange> HEALTH_REGEN_COOLDOWN = Settings.MOB_SETTINGS.option("health-regen-cooldown", Range.create(15, 35));
-    @Unique private static final Option<Integer> HEALTH_REGEN_START_DELAY = Settings.MOB_SETTINGS.option("after-damage-health-regen-delay", 100);
-    @Unique private static final Option<Float> HEALTH_REGEN_PERCENT = Settings.MOB_SETTINGS.option("health-regen-percent", 0.05f);
+    @Unique private static final Option<IntRange> HEALTH_REGEN_COOLDOWN = Settings.PASSIVE_HEALTH_REGENERATION.option("healing-cooldown", Range.create(15, 35));
+    @Unique private static final Option<Integer> HEALTH_REGEN_START_DELAY = Settings.PASSIVE_HEALTH_REGENERATION.option("after-damage-delay", 100);
+    @Unique private static final Option<Float> HEALTH_REGEN_PERCENT = Settings.PASSIVE_HEALTH_REGENERATION.option("healing-percent-of-max-health", 0.05f);
 
     @Unique private int healthRegenCooldown = HEALTH_REGEN_COOLDOWN.getValue().min;
     @Unique private int afterDamageTicks = HEALTH_REGEN_START_DELAY.getValue();
@@ -74,6 +73,6 @@ public abstract class MixinMobEntity extends LivingEntity implements Living
 
     @Override
     public boolean cringeMod$canRegenHealth() {
-        return afterDamageTicks <= 0 && HEALTH_REGENERATION.getValue() && !getType().isIn(ModEntityTypeTags.CANNOT_REGEN_HEALTH);
+        return afterDamageTicks <= 0 && !getType().isIn(ModEntityTypeTags.CANNOT_REGEN_HEALTH);
     }
 }
