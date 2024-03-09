@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
+import me.xleiten.rebalance.api.config.types.StringType;
 import me.xleiten.rebalance.api.game.server.security.ServerMetadata;
 import me.xleiten.rebalance.core.components.AutoHardcoreWorldReset;
 import me.xleiten.rebalance.core.components.SitManager;
@@ -35,11 +36,13 @@ public final class Rebalance extends ServerMod
 
     public static final Logger LOGGER = LoggerFactory.getLogger(StringUtils.capitalize(MOD_ID));
     public static final DynamicStorage CONFIG = DynamicStorage.create(MOD_ID)
-            .addTypeAdapter(new IntRange.Type())
-            .addTypeAdapter(new DoubleRange.Type())
-            .addTypeAdapter(new FloatRange.Type())
-            .addTypeAdapter(new ServerMetadata.Type())
-            .addTypeAdapter(new AwaitingStage.IngredientsInfo.Type())
+            .addTypeAdapters(
+                    new IntRange.Type(),
+                    new DoubleRange.Type(),
+                    new FloatRange.Type(),
+                    new ServerMetadata.Type(),
+                    new AwaitingStage.IngredientsInfo.Type()
+            )
             .setLogger(LOGGER)
             .load();
 

@@ -37,6 +37,13 @@ public final class DynamicStorage
         return this;
     }
 
+    public DynamicStorage addTypeAdapters(@NotNull IType<?, ?>...adapters) {
+        for (IType<?, ?> adapter: adapters) {
+            addTypeAdapter(adapter);
+        }
+        return this;
+    }
+
     public DynamicStorage useStrictMode() {
         this.strictMode = true;
         return this;
