@@ -13,6 +13,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ToolItem;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -62,7 +63,11 @@ public final class HostileEntityBlockBreakGoal extends Goal
             return false;
         }
 
-        var path = mob.getNavigation().getCurrentPath();
+        return checkTargetPos();
+    }
+
+    private boolean checkTargetPos() {
+        var path = navigation.getCurrentPath();
         if (path != null) {
             var lastNode = path.getEnd();
             if (lastNode != null) {
@@ -70,11 +75,14 @@ public final class HostileEntityBlockBreakGoal extends Goal
                 if (mob.squaredDistanceTo(blockPos.toCenterPos()) <= 3) {
                     lastNavigationPos = blockPos;
                     return true;
-                }
+                } else
+                    return false;
             }
         }
 
-        return false;
+        // will use self position if path is empty
+        lastNavigationPos = mob.getBlockPos();
+        return true;
     }
 
     @Override
