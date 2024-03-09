@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.Unique;
 @Mixin(ServerPlayerEntity.class)
 public abstract class MixinServerPlayerEntity extends MixinLivingEntity
 {
-    @Unique private static final Option<Float> HEALTH_RATIO_MULTIPLIER = Settings.PLAYER_SETTINGS.option("player-effect-multiplier", 0.6f);
-    @Unique private static final Option<Float> HEALTH_SLOWDOWN_STOP_LIMIT = Settings.PLAYER_SETTINGS.option("player-affection-health-limit", 0.65f);
+    @Unique private static final Option<Float> HEALTH_RATIO_MULTIPLIER = Settings.SLOWDOWN_BY_HEALTH.option("player-effect-multiplier", 0.6f);
+    @Unique private static final Option<Float> HEALTH_SLOWDOWN_STOP_LIMIT = Settings.SLOWDOWN_BY_HEALTH.option("player-affection-health-limit", 0.65f);
 
     protected MixinServerPlayerEntity(EntityType<?> type, World world)
     {
