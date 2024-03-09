@@ -102,6 +102,7 @@
     "world.entity.combat.shield_blast_resistance.MixinProtectionEnchantment",
     "world.entity.combat.shield_blast_resistance.MixinServerPlayerEntity",
     "world.entity.combat.shield_blast_resistance.MixinLivingEntity",
+    "world.entity.combat.deep_dark_stealth.MixinLivingEntity",
 
     "world.entity.skin_handler.MixinServerPlayerEntity",
     "world.entity.damage_rebalance.MixinLivingEntity",
