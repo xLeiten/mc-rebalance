@@ -45,9 +45,6 @@ public final class Settings
     public static final Section ARMOR_BUFFS = ITEMS.section("armor");
 
     // Mechanics
-    public static final Section HARDCORE_WORLD_RESET = MAIN_STORAGE.section("Hardcore world reset");
-    public static final Section HARDCORE_PLAYER_RESPAWN = MAIN_STORAGE.section("Hardcore player respawn");
-    public static final Section TAB_SERVER_INFO = MAIN_STORAGE.section("Tab server info");
     public static final Section SLOWDOWN_BY_HEALTH = MAIN_STORAGE.section("Slowdown by health");
     public static final Section PASSIVE_HEALTH_REGENERATION = MAIN_STORAGE.section("Passive health regeneration");
     public static final Section SHIELD_REWORK = MAIN_STORAGE.section("Shield rework");

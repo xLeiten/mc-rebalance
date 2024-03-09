@@ -4,11 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
 import me.xleiten.rebalance.core.components.AutoHardcoreWorldReset;
-import me.xleiten.rebalance.core.components.SitManager;
-import me.xleiten.rebalance.core.components.SkinManager;
+import me.xleiten.rebalance.core.components.OfflineSkins;
+import me.xleiten.rebalance.core.components.PlayerSitting;
 import me.xleiten.rebalance.core.components.TabServerInfo;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
-import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.AwaitingStage;
+import me.xleiten.rebalance.core.components.hardcore_player_respawn.IngredientsInfo;
 import me.xleiten.rebalance.core.game.ServerMetadata;
 import me.xleiten.rebalance.util.StringUtils;
 import me.xleiten.rebalance.util.math.DoubleRange;
@@ -39,15 +39,15 @@ public final class Rebalance extends ServerMod
                     new DoubleRange.Type(),
                     new FloatRange.Type(),
                     new ServerMetadata.Type(),
-                    new AwaitingStage.IngredientsInfo.Type()
+                    new IngredientsInfo.Type()
             )
             .setLogger(LOGGER)
             .load();
 
     public final AutoHardcoreWorldReset autoHardcoreWorldReset = new AutoHardcoreWorldReset(this);
     public final HardcorePlayerRespawn hardcorePlayerRespawn = new HardcorePlayerRespawn(this);
-    public final SkinManager skinManager = new SkinManager(this);
-    public final SitManager sitManager = new SitManager(this);
+    public final OfflineSkins skinManager = new OfflineSkins(this);
+    public final PlayerSitting sitManager = new PlayerSitting(this);
     public final TabServerInfo tabServerInfo = new TabServerInfo(this);
 
     @Override

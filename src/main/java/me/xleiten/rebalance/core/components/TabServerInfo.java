@@ -21,13 +21,13 @@ import java.time.format.DateTimeFormatter;
 
 public final class TabServerInfo extends Component<Rebalance>
 {
-    private final Option<Integer> REFRESH_TICKS = Settings.TAB_SERVER_INFO.option("refresh-ticks", 10);
+    private final Option<Integer> REFRESH_TICKS = settings.option("refresh-ticks", 10);
 
     private int ticks = REFRESH_TICKS.getValue();
 
     public TabServerInfo(@NotNull Rebalance mod)
     {
-        super("TabServerInfo", mod);
+        super("Server info in tab", mod);
         ServerTickEvents.END_SERVER_TICK.register(this::tick);
     }
 

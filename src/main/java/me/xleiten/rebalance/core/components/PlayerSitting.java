@@ -25,13 +25,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class SitManager extends Component<Rebalance>
+public final class PlayerSitting extends Component<Rebalance>
 {
     private final ConcurrentHashMap<UUID, SittingPlayer> PLAYERS_SITTING = new ConcurrentHashMap<>();
 
-    public SitManager(@NotNull Rebalance mod)
+    public PlayerSitting(@NotNull Rebalance mod)
     {
-        super("SitManager", mod);
+        super("Player sitting", mod);
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
             if (hand == Hand.MAIN_HAND && hitResult != null) {
