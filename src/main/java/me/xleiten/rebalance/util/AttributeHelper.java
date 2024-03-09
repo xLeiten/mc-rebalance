@@ -89,8 +89,34 @@ public class AttributeHelper
         return false;
     }
 
+    public static boolean removeModifier(EntityAttributeInstance instance, @NotNull UUID id) {
+        if (instance != null) {
+            instance.removeModifier(id);
+            return true;
+        }
+        return false;
+    }
+
     public static boolean removeModifier(@NotNull LivingEntity entity, @NotNull EntityAttribute attribute, @NotNull String name) {
         return removeModifier(entity.getAttributeInstance(attribute), name);
+    }
+
+    public static boolean addOrSetModifier(EntityAttributeInstance instance, @NotNull UUID id, double value, String name, EntityAttributeModifier.Operation operation, boolean persistant) {
+        if (instance != null) {
+            var modifier = instance.getModifier(id);
+            if (modifier == null) {
+                modifier = new EntityAttributeModifier(id, name, value, operation);
+                if (persistant)
+                    instance.addPersistentModifier(modifier);
+                else
+                    instance.addTemporaryModifier(modifier);
+            } else {
+                ((AttributeModifier) modifier).cringeMod$setValue(value);
+                instance.onUpdate();
+            }
+            return true;
+        }
+        return false;
     }
 
     public static double getValue(EntityAttributeInstance instance, double defaultValue) {
