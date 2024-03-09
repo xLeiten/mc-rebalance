@@ -13,7 +13,6 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ToolItem;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -36,9 +35,9 @@ public final class HostileEntityBlockBreakGoal extends Goal
     private final Random random;
 
     private BlockPos lastNavigationPos;
-    private BlockPos currentPos;
+    private BlockPos miningPos;
 
-    private float checkBlocksCooldown = 40;
+    private float checkBlocksCooldown;
     private float breakTicks = 0;
 
     public HostileEntityBlockBreakGoal(@NotNull HostileEntity mob)
@@ -47,6 +46,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
         this.world = mob.getWorld();
         this.random = mob.getRandom();
         this.navigation = mob.getNavigation();
+        this.checkBlocksCooldown = RandomHelper.range(random, SEARCH_NEW_BLOCK_COOLDOWN.getValue());
     }
 
     @Override
@@ -69,11 +69,12 @@ public final class HostileEntityBlockBreakGoal extends Goal
                 var blockPos = lastNode.getBlockPos();
                 if (mob.squaredDistanceTo(blockPos.toCenterPos()) <= 3) {
                     lastNavigationPos = blockPos;
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     @Override
@@ -94,23 +95,23 @@ public final class HostileEntityBlockBreakGoal extends Goal
             checkBlocksCooldown = RandomHelper.range(random, SEARCH_NEW_BLOCK_COOLDOWN.getValue());
             var pos = findNextPosTo(target);
             if (pos != null) {
-                if (currentPos == null) {
+                if (miningPos == null) {
                     if (canBreakBlock(world.getBlockState(pos)))
-                        currentPos = pos;
+                        miningPos = pos;
                 }
             }
         }
 
-        if (currentPos != null) {
+        if (miningPos != null) {
             if (breakTicks < MAX_BREAK_TICKS.getValue()) {
-                if (mob.getPos().distanceTo(currentPos.toCenterPos()) <= 3) {
-                    var stage = (int) (((Mob) mob).cringeMod$calcBlockBreakingDelta(currentPos) * breakTicks * 10);
+                if (mob.getPos().distanceTo(miningPos.toCenterPos()) <= 3) {
+                    var stage = (int) (((Mob) mob).cringeMod$calcBlockBreakingDelta(miningPos) * breakTicks * 10);
                     if (stage < 10) {
-                        setBreakProgress(currentPos, stage);
-                        mob.getLookControl().lookAt(currentPos.toCenterPos());
+                        setBreakProgress(miningPos, stage);
+                        mob.getLookControl().lookAt(miningPos.toCenterPos());
                         mob.swingHand(Hand.MAIN_HAND);
                     } else {
-                        mob.getWorld().breakBlock(currentPos, true, mob);
+                        mob.getWorld().breakBlock(miningPos, true, mob);
                         checkBlocksCooldown = RandomHelper.range(random, SEARCH_BLOCK_AFTER_BREAK_COOLDOWN.getValue());
                         stop();
                         return;
@@ -123,6 +124,9 @@ public final class HostileEntityBlockBreakGoal extends Goal
                 stop();
             }
         }
+
+        if (!mob.isAlive())
+            stop();
     }
 
     @Nullable
@@ -243,10 +247,10 @@ public final class HostileEntityBlockBreakGoal extends Goal
 
     @Override
     public void stop() {
-        if (currentPos != null) {
-            setBreakProgress(currentPos, -1);
+        if (miningPos != null) {
+            setBreakProgress(miningPos, -1);
         }
-        currentPos = null;
+        miningPos = null;
         breakTicks = 0;
     }
 
