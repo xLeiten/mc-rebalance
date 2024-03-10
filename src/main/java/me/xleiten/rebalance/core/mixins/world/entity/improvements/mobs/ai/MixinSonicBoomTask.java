@@ -17,7 +17,7 @@ import static me.xleiten.rebalance.Settings.WARDEN_SETTINGS;
 @Mixin(SonicBoomTask.class)
 public abstract class MixinSonicBoomTask
 {
-    @Unique private static Option<DoubleRange> DAMAGE_MULT = WARDEN_SETTINGS.option("sonic-boom-damage-mult", Range.create(1.5, 2));
+    @Unique private static final Option<DoubleRange> DAMAGE_MULT = WARDEN_SETTINGS.option("sonic-boom-damage-mult", Range.create(1.5, 2));
 
     @ModifyArg(
             method = "method_43265",

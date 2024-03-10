@@ -35,8 +35,8 @@ import static me.xleiten.rebalance.util.math.RandomHelper.range;
 @Mixin(HostileEntity.class)
 public abstract class MixinHostileEntity extends MixinMobEntity implements Mob
 {
-    @Unique private static final Option<DoubleRange> HOSTILE_FOLLOW_RANGE = MOB_SETTINGS.option("follow-range-blocks", Range.create(32.0, 52.0));
-    @Unique private static final Option<Boolean> LOOK_AT_TARGET_EVERY_TICK = MOB_SETTINGS.option("look-at-target-every-tick", true);
+    @Unique private static final Option<DoubleRange> HOSTILE_FOLLOW_RANGE = AI_SETTINGS.option("hostile-follow-range", Range.create(32.0, 52.0));
+    @Unique private static final Option<Boolean> LOOK_AT_TARGET_EVERY_TICK = AI_SETTINGS.option("look-at-target-every-tick", true);
 
     @Shadow
     public abstract boolean shouldDropXp();
