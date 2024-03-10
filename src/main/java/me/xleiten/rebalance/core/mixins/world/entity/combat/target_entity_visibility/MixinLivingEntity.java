@@ -26,7 +26,7 @@ public abstract class MixinLivingEntity extends Entity
             ),
             index = 2
     )
-    protected double changeDistanceScalingFactorIfInDeepDark(double value, @Local(argsOnly = true) Entity entity) {
+    protected double changeDistanceScalingFactor(double value, @Local(argsOnly = true) Entity entity) {
         var world = getWorld();
         var pos = getBlockPos();
         var lightLevel = world.getLightLevel(pos);
