@@ -37,7 +37,7 @@ public final class IngredientsInfo
     {
         @Override
         public @NotNull String getTypeKey() {
-            return "II";
+            return "IL";
         }
 
         @Override

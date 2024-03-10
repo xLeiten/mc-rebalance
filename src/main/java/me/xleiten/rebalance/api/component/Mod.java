@@ -18,7 +18,7 @@ public abstract class Mod
 
     //protected final StorageManager storageManager = getStorageManager();
     protected final DynamicStorage storage = getStorage();
-    protected final Section settings = storage.section("components");
+    protected final Section settings = storage.section("Components");
 
     protected Mod() {
         //storageManager.addStorage(storage);
