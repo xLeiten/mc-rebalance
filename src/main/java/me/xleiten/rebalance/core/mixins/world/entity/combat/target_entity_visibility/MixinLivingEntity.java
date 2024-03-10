@@ -2,9 +2,11 @@ package me.xleiten.rebalance.core.mixins.world.entity.combat.target_entity_visib
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,12 +29,20 @@ public abstract class MixinLivingEntity extends Entity
             index = 2
     )
     protected double changeDistanceScalingFactor(double value, @Local(argsOnly = true) Entity entity) {
-        var world = getWorld();
-        var pos = getBlockPos();
-        var lightLevel = world.getLightLevel(pos);
-        value *= 1 - (15 - lightLevel) * 0.015;
-        if (world.getBiome(pos).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
-            value *= 0.5 + (lightLevel / 15d) * 0.5;
+        if (entity instanceof LivingEntity living) {
+            var world = getWorld();
+            var pos = getBlockPos();
+            var entityType = living.getType();
+            var lightLevel = world.getLightLevel(pos);
+            var hasNightVision = living.getStatusEffect(StatusEffects.NIGHT_VISION) != null || entityType.isIn(RebalanceEntityTypeTags.CAN_FULLY_SEE_IN_DARKNESS);
+
+            if (!hasNightVision) {
+                value *= 1 - (15 - lightLevel) * 0.015;
+            }
+
+            if (!entityType.isIn(RebalanceEntityTypeTags.VISION_NOT_AFFECTED_BY_SCULK) && world.getBiome(pos).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
+                value *= 0.5 + (hasNightVision ? 0.3 : (lightLevel / 15d) * 0.5);
+            }
         }
         return value;
     }
