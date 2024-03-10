@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.combat.deep_dark_stealth;
+package me.xleiten.rebalance.core.mixins.world.entity.combat.target_entity_visibility;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
@@ -27,8 +27,12 @@ public abstract class MixinLivingEntity extends Entity
             index = 2
     )
     protected double changeDistanceScalingFactorIfInDeepDark(double value, @Local(argsOnly = true) Entity entity) {
-        if (getWorld().getBiome(getBlockPos()).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
-            return value * 0.25;
+        var world = getWorld();
+        var pos = getBlockPos();
+        var lightLevel = world.getLightLevel(pos);
+        value *= 1 - (15 - lightLevel) * 0.015;
+        if (world.getBiome(pos).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
+            value *= 0.5 + (lightLevel / 15d) * 0.5;
         }
         return value;
     }
