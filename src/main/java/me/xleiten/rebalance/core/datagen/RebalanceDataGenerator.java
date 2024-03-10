@@ -106,7 +106,8 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                     .add(
                             EntityType.WARDEN,
                             EntityType.ENDERMAN,
-                            EntityType.WITCH
+                            EntityType.WITCH,
+                            EntityType.CREEPER
                     )
             ;
 
