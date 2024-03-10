@@ -4,7 +4,7 @@ import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
 import me.xleiten.rebalance.api.game.world.entity.HealthDisplay;
-import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -51,7 +51,7 @@ public abstract class MixinLivingEntity extends Entity implements Living
             )
     )
     public void showHealth(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (source.getAttacker() instanceof PlayerEntity && !getType().isIn(ModEntityTypeTags.WITHOUT_HEALTH_DISPLAY))
+        if (source.getAttacker() instanceof PlayerEntity && !getType().isIn(RebalanceEntityTypeTags.WITHOUT_HEALTH_DISPLAY))
             healthDisplay.show(MAX_HEALTH_DISPLAY_TICKS.getValue());
     }
 

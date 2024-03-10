@@ -3,7 +3,7 @@ package me.xleiten.rebalance.core.mixins.world.entity.combat.health_slowdown;
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
-import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
 import me.xleiten.rebalance.util.AttributeHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -48,7 +48,7 @@ public abstract class MixinLivingEntity extends Entity implements Living
             at = @At("TAIL")
     )
     public void recheckHealth(CallbackInfo ci) {
-        if (isAlive() && !getType().isIn(ModEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)) {
+        if (isAlive() && !getType().isIn(RebalanceEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)) {
             var ratio = getHealth() / getMaxHealth();
             AttributeHelper.addOrSetModifier(
                     getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED),
