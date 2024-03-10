@@ -22,8 +22,8 @@ import static me.xleiten.rebalance.util.AttributeHelper.addModifier;
 import static me.xleiten.rebalance.util.AttributeHelper.modifier;
 
 @Mixin(WardenEntity.class)
-public abstract class MixinWardenEntity extends MixinHostileEntity {
-
+public abstract class MixinWardenEntity extends MixinHostileEntity
+{
     @Unique private static final Option<DoubleRange> MOVE_SPEED_MULT = WARDEN_SETTINGS.option("move-speed-mult", Range.create(0.15, 0.25));
 
     protected MixinWardenEntity(EntityType<? extends HostileEntity> entityType, World world)
@@ -36,5 +36,4 @@ public abstract class MixinWardenEntity extends MixinHostileEntity {
         super.cringeMod$onMobInitialize(world, random, reason, pos, difficulty);
         addModifier(this, EntityAttributes.GENERIC_MOVEMENT_SPEED, modifier("moveSpeedBoost", RandomHelper.range(random, MOVE_SPEED_MULT.getValue())));
     }
-
 }
