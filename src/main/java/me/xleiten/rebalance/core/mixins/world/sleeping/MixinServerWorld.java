@@ -1,5 +1,6 @@
 package me.xleiten.rebalance.core.mixins.world.sleeping;
 
+import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -32,7 +33,7 @@ import static me.xleiten.rebalance.Settings.WORLD_SETTINGS;
 @Mixin(ServerWorld.class)
 public abstract class MixinServerWorld extends World {
 
-    @Unique private static final Option<Integer> MAX_NIGHT_SKIP_MULTIPLIER = WORLD_SETTINGS.option("nightSkipTickMultiplier", 20);
+    @Unique private static final Option<Integer> MAX_NIGHT_SKIP_MULTIPLIER = Settings.CUSTOM_SLEEPING.option("night-skip-tick-multiplier", 20);
 
     @Shadow @Final private SleepManager sleepManager;
 
