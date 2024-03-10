@@ -1,7 +1,7 @@
 package me.xleiten.rebalance.core.datagen;
 
 import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
-import me.xleiten.rebalance.api.game.world.entity.tag.ModEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -36,21 +36,21 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
 
         @Override
         protected void configure(RegistryWrapper.WrapperLookup arg) {
-            getOrCreateTagBuilder(ModEntityTypeTags.BOSSES)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.BOSSES)
                     .add(
                             EntityType.WITHER,
                             EntityType.ENDER_DRAGON
                     )
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.GUARDIANS)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.GUARDIANS)
                     .add(
                             EntityType.GUARDIAN,
                             EntityType.ELDER_GUARDIAN
                     )
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.GOLEMS)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.GOLEMS)
                     .add(
                             EntityType.IRON_GOLEM,
                             EntityType.SNOW_GOLEM,
@@ -58,11 +58,11 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                     )
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.CANNOT_REGEN_HEALTH)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.CANNOT_REGEN_HEALTH)
                     .forceAddTag(EntityTypeTags.SKELETONS)
-                    .addTag(ModEntityTypeTags.BOSSES)
-                    .addTag(ModEntityTypeTags.GUARDIANS)
-                    .addTag(ModEntityTypeTags.GOLEMS)
+                    .addTag(RebalanceEntityTypeTags.BOSSES)
+                    .addTag(RebalanceEntityTypeTags.GUARDIANS)
+                    .addTag(RebalanceEntityTypeTags.GOLEMS)
                     .add(
                             EntityType.ZOMBIE,
                             EntityType.ZOMBIE_VILLAGER,
@@ -76,12 +76,12 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                     )
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)
-                    .addTag(ModEntityTypeTags.BOSSES)
-                    .addTag(ModEntityTypeTags.GUARDIANS)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.NOT_AFFECTED_BY_HEALTH_SLOWDOWN)
+                    .addTag(RebalanceEntityTypeTags.BOSSES)
+                    .addTag(RebalanceEntityTypeTags.GUARDIANS)
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.CAN_MINE_BLOCKS)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.CAN_MINE_BLOCKS)
                     .add(
                             EntityType.ZOMBIE,
                             EntityType.HUSK,
@@ -94,8 +94,26 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                     )
             ;
 
-            getOrCreateTagBuilder(ModEntityTypeTags.WITHOUT_HEALTH_DISPLAY)
-                    .addTag(ModEntityTypeTags.BOSSES)
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.WITHOUT_HEALTH_DISPLAY)
+                    .addTag(RebalanceEntityTypeTags.BOSSES)
+            ;
+
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.CAN_FULLY_SEE_IN_DARKNESS)
+                    .forceAddTag(EntityTypeTags.SKELETONS)
+                    .addTag(RebalanceEntityTypeTags.GOLEMS)
+                    .addTag(RebalanceEntityTypeTags.BOSSES)
+                    .addTag(RebalanceEntityTypeTags.GUARDIANS)
+                    .add(
+                            EntityType.WARDEN,
+                            EntityType.ENDERMAN,
+                            EntityType.WITCH
+                    )
+            ;
+
+            getOrCreateTagBuilder(RebalanceEntityTypeTags.VISION_NOT_AFFECTED_BY_SCULK)
+                    .add(
+                            EntityType.WARDEN
+                    )
             ;
         }
     }
