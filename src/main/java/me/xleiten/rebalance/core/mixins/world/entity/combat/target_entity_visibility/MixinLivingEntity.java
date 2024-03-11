@@ -37,7 +37,7 @@ public abstract class MixinLivingEntity extends Entity
             var hasNightVision = living.getStatusEffect(StatusEffects.NIGHT_VISION) != null || entityType.isIn(RebalanceEntityTypeTags.CAN_FULLY_SEE_IN_DARKNESS);
 
             if (!hasNightVision) {
-                value *= 1 - (15 - lightLevel) * 0.015;
+                value *= 1 - (6 - lightLevel) * 0.02;
             }
 
             if (!entityType.isIn(RebalanceEntityTypeTags.VISION_NOT_AFFECTED_BY_SCULK) && world.getBiome(pos).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
