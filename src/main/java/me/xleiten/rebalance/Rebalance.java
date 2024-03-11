@@ -67,30 +67,12 @@ public final class Rebalance extends ServerMod
                     return 1;
                 }))
         );
-
-       /* dispatcher.register(literal("storage").then(argument("name", StringArgumentType.word())
-                .then(literal("save")
-                        .executes(context -> {
-                            STORAGE_MANAGER.getStorage(StringArgumentType.getString(context, "name")).ifPresent(storage1 -> {
-                                CompletableFuture.runAsync(() -> {
-                                    storage1.save(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true))
-                                });
-                            });
-                            return 1;
-                        })
-                ))
-        ));*/
     }
 
     @Override
     public @NotNull DynamicStorage getStorage() {
         return MAIN_STORAGE;
     }
-
-    /*@Override
-    public @NotNull StorageManager getStorageManager() {
-        return STORAGE_MANAGER;
-    }*/
 
     @Override
     public @NotNull Logger getLogger() {
