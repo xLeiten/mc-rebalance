@@ -81,7 +81,7 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     @Unique protected boolean shouldAlertOthers = SHOULD_ALERT_OTHERS.getValue();
     @Unique protected int spawnReinforcementCooldown = REINFORCEMENT_COOLDOWN.getValue();
 
-    @Unique protected final TargetPredicate TARGET_PREDICATE = TargetPredicate.createAttackable().ignoreVisibility().setPredicate(entity -> entity instanceof PlayerEntity player && player.getAbilities().creativeMode);
+    @Unique protected final TargetPredicate TARGET_PREDICATE = TargetPredicate.createAttackable().ignoreVisibility().setPredicate(entity -> !(entity instanceof PlayerEntity player) || !player.getAbilities().creativeMode);
 
     protected MixinZombieEntity(EntityType<? extends HostileEntity> entityType, World world)
     {
@@ -181,16 +181,16 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     public void initEquipment(Random random, LocalDifficulty localDifficulty) {
         super.initEquipment(random, localDifficulty);
         if (chance(random, this.getWorld().getDifficulty() == Difficulty.HARD ? SPAWN_WITH_TOOL_CHANCE.getValue() : 1F)) {
-            ItemStack mainTool;
+            Item mainTool;
             if (chance(random, 50))
-                mainTool = new ItemStack(Items.IRON_SWORD);
+                mainTool = Items.IRON_SWORD;
             else {
                 if (getY() <= 40) {
-                    mainTool = new ItemStack(chance(random, 70) ? Items.IRON_PICKAXE : Items.IRON_SHOVEL);
+                    mainTool = chance(random, 70) ? Items.IRON_PICKAXE : Items.IRON_SHOVEL;
                 } else
-                    mainTool = new ItemStack(chance(random, 50) ? Items.IRON_AXE : Items.IRON_SHOVEL);
+                    mainTool = chance(random, 50) ? Items.IRON_AXE : Items.IRON_SHOVEL;
             }
-            equipStack(EquipmentSlot.MAINHAND, mainTool);
+            equipStack(EquipmentSlot.MAINHAND, new ItemStack(mainTool));
         }
     }
 
@@ -292,6 +292,8 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
 
     @Override
     public void cringeMod$onEntityAddedToWorld(ServerWorld world, Vec3d pos) {
+        super.cringeMod$onEntityAddedToWorld(world, pos);
+        System.out.println("zombie added to world: " + this.getUuidAsString());
         searchForTarget();
     }
 
@@ -330,11 +332,14 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
 
     @Unique
     protected void searchForTarget() {
-        if (this.getTarget() != null || !chance(random, SEARCH_TARGET_ON_SPAWN_CHANCE.getValue()) || !cringeMod$canAlertOthers()) return;
+        if (this.getTarget() != null || !chance(random, SEARCH_TARGET_ON_SPAWN_CHANCE.getValue())) return;
+        var value = getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7;
+        System.out.println("Follow range: " + value);
         var player = getWorld().getClosestPlayer(TARGET_PREDICATE.setBaseMaxDistance(getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7), this);
         if (player != null) {
             this.setTarget(player);
         }
+        System.out.println("Target: " + (player != null ? player.getUuidAsString() : "none"));
     }
 
     @Unique
