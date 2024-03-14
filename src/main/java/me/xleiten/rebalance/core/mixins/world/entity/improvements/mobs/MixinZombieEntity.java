@@ -293,7 +293,6 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     @Override
     public void cringeMod$onEntityAddedToWorld(ServerWorld world, Vec3d pos) {
         super.cringeMod$onEntityAddedToWorld(world, pos);
-        System.out.println("zombie added to world: " + this.getUuidAsString());
         searchForTarget();
     }
 
@@ -333,13 +332,10 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
     @Unique
     protected void searchForTarget() {
         if (this.getTarget() != null || !chance(random, SEARCH_TARGET_ON_SPAWN_CHANCE.getValue())) return;
-        var value = getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7;
-        System.out.println("Follow range: " + value);
         var player = getWorld().getClosestPlayer(TARGET_PREDICATE.setBaseMaxDistance(getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE) * 0.7), this);
         if (player != null) {
             this.setTarget(player);
         }
-        System.out.println("Target: " + (player != null ? player.getUuidAsString() : "none"));
     }
 
     @Unique
