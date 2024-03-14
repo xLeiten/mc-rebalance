@@ -41,7 +41,7 @@ public abstract class MixinLivingEntity extends Entity
             }
 
             if (!entityType.isIn(RebalanceEntityTypeTags.VISION_NOT_AFFECTED_BY_SCULK) && world.getBiome(pos).isIn(RebalanceBiomeTags.SCULK_BIOME)) {
-                value *= 0.5 + (hasNightVision ? 0.5 : (lightLevel / 15d) * 0.5);
+                value *= 0.5 + (hasNightVision ? 0.5 : (lightLevel / 15d) * 0.2);
             }
         }
         return value;
