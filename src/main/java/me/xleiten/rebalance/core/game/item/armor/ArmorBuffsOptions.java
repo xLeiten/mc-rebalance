@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.game.item;
+package me.xleiten.rebalance.core.game.item.armor;
 
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;
