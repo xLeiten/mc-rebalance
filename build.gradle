@@ -125,3 +125,14 @@ sourceSets {
         }
     }
 }
+
+tasks.register('deploy', Copy) {
+    file("D:\\Games\\Minecraft\\Servers\\1.20.4+\\mods").eachFile { file ->
+        if (file.name.startsWith(project.archives_base_name) && !file.name.endsWith(project.mod_version))
+            file.delete()
+    }
+
+    dependsOn 'build'
+    from remapJar.archiveFile
+    into file("D:\\Games\\Minecraft\\Servers\\1.20.4+\\mods")
+}
