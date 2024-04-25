@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "rebalance",
+  "id": "rebalance_mod",
   "version": "${version}",
-  "name": "Rebalance",
-  "description": "Позволяет мобам разорвать тебе очко",
+  "name": "Rebalance Mod",
+  "description": "Изменяет баланс игры в сторону большей сложности. Лучший эффект достигается в режиме 'Хардкор'",
   "authors": ["xLeiten"],
   "license": "All-Rights-Reserved",
   "environment": "server",
@@ -19,9 +19,9 @@
     ]
   },
   "mixins": [
-    "rebalance.mixins.json"
+    "rebalance_mod.mixins.json"
   ],
-  "accessWidener": "rebalance.accesswidener",
+  "accessWidener": "rebalance_mod.accesswidener",
   "depends": {
     "fabricloader": ">=${loader_version}",
     "minecraft": "${minecraft_version}"
