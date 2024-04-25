@@ -15,6 +15,9 @@ import me.xleiten.rebalance.util.math.DoubleRange;
 import me.xleiten.rebalance.util.math.FloatRange;
 import me.xleiten.rebalance.util.math.IntRange;
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -22,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -57,7 +61,7 @@ public final class Rebalance extends ServerMod
 
     @Override
     protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(literal("storage").requires(source -> source.hasPermissionLevel(4))
+        dispatcher.register(literal("rebalance-config").requires(source -> source.hasPermissionLevel(4))
                 .then(literal("load").executes(context -> {
                     CompletableFuture.runAsync(() -> storage.load(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
                     return 1;

@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.health_display;
+package me.xleiten.rebalance.core.mixins.world.entity.mob.health_display;
 
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;

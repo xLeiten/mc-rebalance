@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.combat.shield_blast_resistance;
+package me.xleiten.rebalance.core.mixins.world.item.shield_blast_resistance;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;

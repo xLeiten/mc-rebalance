@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.combat.target_entity_visibility;
+package me.xleiten.rebalance.core.mixins.world.entity.mob.vision_rework;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;

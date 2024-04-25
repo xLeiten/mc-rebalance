@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.items.armor_rebalance;
+package me.xleiten.rebalance.core.mixins.world.item.armor_rebalance;
 
 import net.minecraft.item.ArmorMaterials;
 import org.spongepowered.asm.mixin.Debug;

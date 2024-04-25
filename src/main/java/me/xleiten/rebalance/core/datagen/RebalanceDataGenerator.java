@@ -2,11 +2,13 @@ package me.xleiten.rebalance.core.datagen;
 
 import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
 import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.item.tag.RebalanceItemTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -25,6 +27,26 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
         FabricDataGenerator.Pack pack = generator.createPack();
         pack.addProvider(EntityTagProvider::new);
         pack.addProvider(BiomeTagProvider::new);
+        pack.addProvider(ItemTagProvider::new);
+    }
+
+    private static class ItemTagProvider extends FabricTagProvider.ItemTagProvider
+    {
+
+        public ItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
+            super(output, completableFuture);
+        }
+
+        @Override
+        protected void configure(RegistryWrapper.WrapperLookup arg) {
+            getOrCreateTagBuilder(RebalanceItemTags.CAN_HAVE_MULTIPLE_PROTECTION_ENCHANTMENTS)
+                    .add(
+                            Items.NETHERITE_CHESTPLATE,
+                            Items.NETHERITE_HELMET,
+                            Items.NETHERITE_LEGGINGS,
+                            Items.NETHERITE_BOOTS
+                    );
+        }
     }
 
     private static class EntityTagProvider extends FabricTagProvider.EntityTypeTagProvider

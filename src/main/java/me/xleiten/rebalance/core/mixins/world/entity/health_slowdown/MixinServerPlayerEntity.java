@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.combat.health_slowdown;
+package me.xleiten.rebalance.core.mixins.world.entity.health_slowdown;
 
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;

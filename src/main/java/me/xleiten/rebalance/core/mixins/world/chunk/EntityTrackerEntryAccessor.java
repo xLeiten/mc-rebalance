@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.chunks;
+package me.xleiten.rebalance.core.mixins.world.chunk;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.server.network.EntityTrackerEntry;

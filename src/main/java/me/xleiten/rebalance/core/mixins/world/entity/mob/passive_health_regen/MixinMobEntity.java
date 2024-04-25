@@ -1,4 +1,4 @@
-package me.xleiten.rebalance.core.mixins.world.entity.combat.passive_health_regen;
+package me.xleiten.rebalance.core.mixins.world.entity.mob.passive_health_regen;
 
 import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.config.Option;

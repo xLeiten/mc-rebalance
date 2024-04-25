@@ -1,11 +1,11 @@
-package me.xleiten.rebalance.core.mixins.world.entity.skin_handler;
+package me.xleiten.rebalance.core.mixins.world.entity.player.offline_skins;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Pair;
 import me.xleiten.rebalance.api.game.world.entity.SkinData;
 import me.xleiten.rebalance.api.game.world.entity.SkinHolder;
-import me.xleiten.rebalance.core.mixins.world.chunks.ChunkStorageAccessor;
-import me.xleiten.rebalance.core.mixins.world.chunks.EntityTrackerAccessor;
+import me.xleiten.rebalance.core.mixins.world.chunk.ChunkStorageAccessor;
+import me.xleiten.rebalance.core.mixins.world.chunk.EntityTrackerAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.data.TrackedData;
