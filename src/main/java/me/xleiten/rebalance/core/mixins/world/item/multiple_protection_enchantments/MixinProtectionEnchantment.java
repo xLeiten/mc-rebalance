@@ -1,12 +1,11 @@
 package me.xleiten.rebalance.core.mixins.world.item.multiple_protection_enchantments;
 
-import me.xleiten.rebalance.Rebalance;
 import me.xleiten.rebalance.api.game.world.item.tag.RebalanceItemTags;
 import me.xleiten.rebalance.util.EnchantmentUtils;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,10 +40,10 @@ public abstract class MixinProtectionEnchantment extends MixinEnchantment
 
     @Override
     public boolean rebalanceMod$canAccept(@NotNull Map<Enchantment, Integer> enchantments, @NotNull ItemStack stack) {
-        var maxProtections = stack.isIn(RebalanceItemTags.CAN_HAVE_MULTIPLE_PROTECTION_ENCHANTMENTS) ? 2 : 1;
         return super.rebalanceMod$canAccept(enchantments, stack) && (
+                stack.isOf(Items.ENCHANTED_BOOK) || stack.isOf(Items.BOOK) ||
                 this.protectionType == ProtectionEnchantment.Type.FALL ||
-                EnchantmentUtils.countEnchantments(FILTER, enchantments.keySet()) <= maxProtections
+                EnchantmentUtils.countEnchantments(FILTER, enchantments.keySet()) <= (stack.isIn(RebalanceItemTags.CAN_HAVE_MULTIPLE_PROTECTION_ENCHANTMENTS) ? 2 : 1)
         );
     }
 }
