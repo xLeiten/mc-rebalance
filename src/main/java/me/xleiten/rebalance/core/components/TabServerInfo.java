@@ -21,17 +21,17 @@ import java.time.format.DateTimeFormatter;
 
 public final class TabServerInfo extends Component<Rebalance>
 {
-    private static final Option<Integer> REFRESH_TICKS = Settings.TAB_SERVER_INFO.option("refresh-ticks", 10);
+    private final Option<Integer> REFRESH_TICKS = settings.option("refresh-ticks", 10);
 
-    private static int ticks = REFRESH_TICKS.getValue();
+    private int ticks = REFRESH_TICKS.getValue();
 
     public TabServerInfo(@NotNull Rebalance mod)
     {
-        super("TabServerInfo", mod);
-        ServerTickEvents.END_SERVER_TICK.register(TabServerInfo::tick);
+        super("Server info in tab", mod);
+        ServerTickEvents.END_SERVER_TICK.register(this::tick);
     }
 
-    private static void tick(MinecraftServer server) {
+    private void tick(MinecraftServer server) {
         if (ticks-- <= 0) {
             server.getPlayerManager().getPlayerList().forEach(player -> {
                 player.networkHandler.sendPacket(new PlayerListHeaderS2CPacket(
@@ -42,21 +42,21 @@ public final class TabServerInfo extends Component<Rebalance>
         }
     }
 
-    public static Text buildHeader(ServerPlayerEntity player) {
+    public Text buildHeader(ServerPlayerEntity player) {
         return Text.literal("")
                 .append(Text.literal("Время: ").append(Text.literal( LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm:ss")) + "\n").formatted(Formatting.GOLD)))
                 .append(Text.literal("Пинг: ").append(Text.literal( player.networkHandler.getLatency() + "\n").formatted(Formatting.GOLD)));
     }
 
-    public static Text buildFooter(ServerPlayerEntity player) {
+    public Text buildFooter(ServerPlayerEntity player) {
         return Text.literal("\n")
                 .append(Text.literal("Мобов: ").append(Text.literal(calcHostileMobs(player.getServerWorld()) + "\n").formatted(Formatting.GOLD)))
                 .append(Text.literal("Направление: ").append(Text.literal(getLookDirection(player) + "\n").formatted(Formatting.GOLD)))
-                .append(Text.literal("Перезапуск: ").append(Text.literal(AutoHardcoreWorldReset.getTotalRestarts() + "").formatted(Formatting.GOLD)))
+                .append(Text.literal("Перезапуск: ").append(Text.literal(mod.autoHardcoreWorldReset.getTotalRestarts() + "").formatted(Formatting.GOLD)))
                 ;
     }
 
-    public static int calcHostileMobs(ServerWorld world) {
+    public int calcHostileMobs(ServerWorld world) {
         int count = 0;
         for (Entity entity: ((ServerLevel) world).cringeMod$getEntityManager().getLookup().iterate()) {
             if (entity instanceof Monster) {
@@ -66,7 +66,7 @@ public final class TabServerInfo extends Component<Rebalance>
         return count;
     }
 
-    public static String getLookDirection(ServerPlayerEntity player) {
+    public String getLookDirection(ServerPlayerEntity player) {
         return switch (player.getMovementDirection()) {
             case NORTH -> "Север";
             case SOUTH -> "Юг";

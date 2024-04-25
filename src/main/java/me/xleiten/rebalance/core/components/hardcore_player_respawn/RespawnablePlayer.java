@@ -18,15 +18,14 @@ import net.minecraft.world.GameMode;
 
 public final class RespawnablePlayer
 {
-    private static final Option<Integer> MAX_TICKS = Settings.HARDCORE_PLAYER_RESPAWN.option("max-existence-ticks", 20 * 60 * 40);
-
-    private int existenceTime = MAX_TICKS.getValue();
+    private int existenceTime;
     private final DynamicTextDisplay existenceTimer;
     private final StagedProcess<RitualContext> ritual;
     private final RitualContext context;
 
-    RespawnablePlayer(ServerPlayerEntity player) {
-        this.context = new RitualContext(player);
+    RespawnablePlayer(ServerPlayerEntity player, HardcorePlayerRespawn component) {
+        this.existenceTime = component.MAX_TICKS.getValue();
+        this.context = new RitualContext(player, component);
         this.ritual = new StagedProcess<>(new AwaitingStage(context), ((result, context) -> remove()));
         this.existenceTimer = new DynamicTextDisplay(context.world, context.position.add(0, 0.5, 0), () -> Text.of(StringHelper.formatTicks(existenceTime, 20)));
         existenceTimer.setBillboardMode(DisplayEntity.BillboardMode.CENTER);

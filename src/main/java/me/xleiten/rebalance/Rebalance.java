@@ -1,68 +1,81 @@
 package me.xleiten.rebalance;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.CommandDispatcher;
 import me.xleiten.rebalance.api.component.ServerMod;
 import me.xleiten.rebalance.api.config.DynamicStorage;
-import me.xleiten.rebalance.api.game.server.security.ServerMetadata;
 import me.xleiten.rebalance.core.components.AutoHardcoreWorldReset;
-import me.xleiten.rebalance.core.components.SitManager;
-import me.xleiten.rebalance.core.components.SkinManager;
+import me.xleiten.rebalance.core.components.OfflineSkins;
+import me.xleiten.rebalance.core.components.PlayerSitting;
 import me.xleiten.rebalance.core.components.TabServerInfo;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
-import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.AwaitingStage;
+import me.xleiten.rebalance.core.components.hardcore_player_respawn.IngredientsInfo;
+import me.xleiten.rebalance.core.game.ServerMetadata;
+import me.xleiten.rebalance.util.StringUtils;
 import me.xleiten.rebalance.util.math.DoubleRange;
 import me.xleiten.rebalance.util.math.FloatRange;
 import me.xleiten.rebalance.util.math.IntRange;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.ProtectionEnchantment;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import static me.xleiten.rebalance.util.Messenger.sendMessage;
-import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class Rebalance extends ServerMod
 {
     public static String MOD_ID = "rebalance";
-    public static final Logger LOGGER = LoggerFactory.getLogger("Rebalance");
 
-    public static final DynamicStorage CONFIG = DynamicStorage.create("rebalance-mod")
-            .addTypeAdapter(new IntRange.Type())
-            .addTypeAdapter(new DoubleRange.Type())
-            .addTypeAdapter(new FloatRange.Type())
-            .addTypeAdapter(new ServerMetadata.Type())
-            .addTypeAdapter(new AwaitingStage.IngredientsInfo.Type())
+    public static final Logger LOGGER = LoggerFactory.getLogger(StringUtils.capitalize(MOD_ID));
+    //public static final StorageManager STORAGE_MANAGER = new StorageManager();
+    public static final DynamicStorage MAIN_STORAGE = DynamicStorage.create(MOD_ID)
+            //.addTo(STORAGE_MANAGER)
+            .addTypeAdapters(
+                    new IntRange.Type(),
+                    new DoubleRange.Type(),
+                    new FloatRange.Type(),
+                    new ServerMetadata.Type(),
+                    new IngredientsInfo.Type()
+            )
             .setLogger(LOGGER)
             .load();
 
     public final AutoHardcoreWorldReset autoHardcoreWorldReset = new AutoHardcoreWorldReset(this);
     public final HardcorePlayerRespawn hardcorePlayerRespawn = new HardcorePlayerRespawn(this);
-    public final SkinManager skinManager = new SkinManager(this);
-    public final SitManager sitManager = new SitManager(this);
+    public final OfflineSkins skinManager = new OfflineSkins(this);
+    public final PlayerSitting sitManager = new PlayerSitting(this);
     public final TabServerInfo tabServerInfo = new TabServerInfo(this);
 
     @Override
     protected void onInitialize() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            dispatcher.register(literal("storage").requires(source -> source.hasPermissionLevel(4))
-                    .then(literal("save").then(argument("delete-unused", BoolArgumentType.bool()).executes(context -> {
-                        CompletableFuture.runAsync(() -> CONFIG.save(BoolArgumentType.getBool(context, "delete-unused"), result -> sendMessage("Результат сохранения: " + result, context)));
-                        return 1;
-                    })))
-                    .then(literal("load").executes(context -> {
-                        CompletableFuture.runAsync(() -> CONFIG.load(result -> sendMessage("Результат загрузки: " + result, context)));
-                        return 1;
-                    }))
-            );
-        });
+
+    }
+
+    @Override
+    protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
+        dispatcher.register(literal("rebalance-config").requires(source -> source.hasPermissionLevel(4))
+                .then(literal("load").executes(context -> {
+                    CompletableFuture.runAsync(() -> storage.load(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
+                    return 1;
+                }))
+                .then(literal("save").executes(context -> {
+                    CompletableFuture.runAsync(() -> storage.save(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
+                    return 1;
+                }))
+        );
     }
 
     @Override
     public @NotNull DynamicStorage getStorage() {
-        return CONFIG;
+        return MAIN_STORAGE;
     }
 
     @Override

@@ -26,7 +26,7 @@ public final class SummoningStage extends Stage<RitualContext>
     private final DynamicTextDisplay timer;
     private final float xpDrainRatio;
     private float xpTempBank = 0;
-    private int ticks = RitualContext.RITUAL_TIME.getValue();
+    private int ticks = context.component.RITUAL_TIME.getValue();
 
     public SummoningStage(@NotNull RitualContext context, @NotNull ServerPlayerEntity participant) {
         super(context);
@@ -35,7 +35,7 @@ public final class SummoningStage extends Stage<RitualContext>
         participant.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, ticks, 4, true, false, false));
         participant.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, ticks, 1, true, false, false));
         this.participant = participant;
-        this.xpDrainRatio = RitualContext.XP_NEEDED.getValue() / ticks;
+        this.xpDrainRatio = context.component.XP_NEEDED.getValue() / ticks;
         this.timer = new DynamicTextDisplay(context.world, context.position.add(0, 0.8, 0), () -> Text.literal(StringHelper.formatTicks(ticks, 20)).formatted(Formatting.GOLD));
         timer.setBillboardMode(DisplayEntity.BillboardMode.CENTER);
         timer.spawn();
@@ -70,7 +70,7 @@ public final class SummoningStage extends Stage<RitualContext>
     }
 
     private boolean canRitualContinue() {
-        return !context.player.isDisconnected() && participant.canTakeDamage() && !participant.isDisconnected() && participant.squaredDistanceTo(context.deadBody) <= RitualContext.RADIUS_SQUARED;
+        return !context.player.isDisconnected() && participant.canTakeDamage() && !participant.isDisconnected() && participant.squaredDistanceTo(context.deadBody) <= context.component.RADIUS_SQUARED;
     }
 
     private void completeRitual() {
@@ -118,7 +118,7 @@ public final class SummoningStage extends Stage<RitualContext>
             pos = createParticlePos(blockPos);
         }
 
-        var r = RitualContext.RADIUS.getValue();
+        var r = context.component.RADIUS.getValue();
         for (int i = 0; i < 360; i += 2) {
             var t = ParticleHelper.RADIAN * i;
             context.world.spawnParticles(ParticleTypes.FLAME, blockPos.x + Math.sin(t) * r, pos.y, blockPos.z + Math.cos(t) * r, 1, 0, 0, 0, 0);

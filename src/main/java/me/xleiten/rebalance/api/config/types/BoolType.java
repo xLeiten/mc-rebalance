@@ -5,7 +5,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import org.jetbrains.annotations.NotNull;
 
-public final class BoolType extends PrimitiveType<Boolean> {
+public final class BoolType extends PrimitiveType<Boolean>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "B";

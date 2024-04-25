@@ -19,21 +19,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-import static me.xleiten.rebalance.Settings.HARDCORE_WORLD_RESET;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class AutoHardcoreWorldReset extends Component<Rebalance>
 {
-    private static final Option<Integer> maxResetTime = HARDCORE_WORLD_RESET.option("reset-counter-ticks", 210);
-    private static final Option<Boolean> showSeconds = HARDCORE_WORLD_RESET.option("show-seconds", true);
+    private final Option<Integer> maxResetTime = settings.option("reset-counter-ticks", 210);
+    private final Option<Boolean> showSeconds = settings.option("show-seconds", true);
 
-    private static final Option<Integer> totalRestarts = HARDCORE_WORLD_RESET.option("total-restarts", 0);
+    private final Option<Integer> totalRestarts = settings.option("total-restarts", 0);
 
-    private static boolean isResetting = false;
-    private static int counter = maxResetTime.getValue();
+    private boolean isResetting = false;
+    private int counter = maxResetTime.getValue();
 
     public AutoHardcoreWorldReset(@NotNull Rebalance mod) {
-        super("auto-hardcore-world-reset", mod);
+        super("Auto hardcore world reset", mod);
 
         on(ModEvents.MOD, event -> {
             CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
@@ -112,7 +111,7 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
         }
     }
 
-    public static int getTotalRestarts() {
+    public int getTotalRestarts() {
         return totalRestarts.getValue();
     }
 }
