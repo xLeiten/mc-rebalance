@@ -108,7 +108,7 @@
     "world.item.multiple_protection_enchantments.MixinEnchantment",
     "world.item.multiple_protection_enchantments.MixinEnchantRandomlyLootFunction",
     "world.item.multiple_protection_enchantments.MixinAnvilScreenHandler",
-    "world.item.elytra_protection.MixinProtectionEnchantment",
+    "world.item.elytra_protection.MixinProtectionEnchantment"
   ],
   "injectors": {
     "defaultRequire": 1
