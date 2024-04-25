@@ -28,6 +28,6 @@ public abstract class MixinAnvilScreenHandler
             )
     )
     private int recheckEnchantments(int value, @Local Map<Enchantment, Integer> enchantments, @Local(ordinal = 1) ItemStack stack) {
-        return value + (stack.isEmpty() ? 0 : EnchantmentUtils.removeConflicts(enchantments, stack));
+        return value + (stack.isEmpty() ? 0 : EnchantmentUtils.removeConflicts(enchantments, stack, EnchantmentUtils.SearchMode.FIRST));
     }
 }

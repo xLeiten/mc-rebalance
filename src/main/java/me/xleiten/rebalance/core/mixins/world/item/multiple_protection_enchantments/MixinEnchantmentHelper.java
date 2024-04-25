@@ -1,42 +1,28 @@
 package me.xleiten.rebalance.core.mixins.world.item.multiple_protection_enchantments;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.xleiten.rebalance.api.game.world.item.enchantment.ModifiedEnchantment;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import me.xleiten.rebalance.Rebalance;
 import me.xleiten.rebalance.util.EnchantmentUtils;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.ItemStack;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.Map;
+import java.util.List;
 
+@Debug(export = true)
 @Mixin(EnchantmentHelper.class)
 public abstract class MixinEnchantmentHelper
 {
-
-    @WrapOperation(
-            method = "enchant",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/item/ItemStack;addEnchantment(Lnet/minecraft/enchantment/Enchantment;I)V"
-            )
+    @ModifyReturnValue(
+            method = "generateEnchantments",
+            at = @At("RETURN")
     )
-    private static void checkApplicableEnchantment1(ItemStack stack, Enchantment enchantment, int level, Operation<Void> original) {
-        if (((ModifiedEnchantment) enchantment).rebalanceMod$canAccept(EnchantmentHelper.get(stack), stack)) original.call(stack, enchantment, level);
-    }
-
-    @WrapOperation(
-            method = "enchant",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/item/EnchantedBookItem;addEnchantment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/enchantment/EnchantmentLevelEntry;)V"
-            )
-    )
-    private static void checkApplicableEnchantment2(ItemStack stack, EnchantmentLevelEntry entry, Operation<Void> original) {
-        if (((ModifiedEnchantment) entry.enchantment).rebalanceMod$canAccept(EnchantmentHelper.get(stack), stack)) original.call(stack, entry);
+    private static List<EnchantmentLevelEntry> changeEnchantmentGeneration(List<EnchantmentLevelEntry> original, @Local ItemStack stack) {
+        EnchantmentUtils.removeConflicts(original, stack);
+        return original;
     }
 }
