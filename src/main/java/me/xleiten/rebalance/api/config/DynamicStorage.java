@@ -93,11 +93,6 @@ public final class DynamicStorage
         return root.section(path);
     }
 
-    public DynamicStorage addTo(@NotNull StorageManager manager) {
-        manager.addStorage(this);
-        return this;
-    }
-
     public Section getRoot() {
         return root;
     }

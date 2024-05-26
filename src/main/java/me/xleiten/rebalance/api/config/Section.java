@@ -2,9 +2,11 @@ package me.xleiten.rebalance.api.config;
 
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 public final class Section extends DynamicStorageEntry
 {
@@ -32,7 +34,7 @@ public final class Section extends DynamicStorageEntry
                     return (Option<T>) option1;
                 } else {
                     if (config.isStrictMode())
-                        throw new IllegalStateException("Attempt to create an already existing option but with with different value type.");
+                        throw new IllegalArgumentException("Attempt to create an already existing option but with with different value type.");
                 }
             }
             option = new Option<>(entryKey, defaultValue, config);

@@ -98,6 +98,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
     @Override
     public void tick() {
         var target = mob.getTarget();
+        if (target == null) return;
 
         if (checkBlocksCooldown-- <= 0) {
             checkBlocksCooldown = RandomHelper.range(random, SEARCH_NEW_BLOCK_COOLDOWN.getValue());

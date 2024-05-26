@@ -1,14 +1,17 @@
 package me.xleiten.rebalance.api.config;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 public final class Option<T> extends DynamicStorageEntry
 {
     public final String name;
     private T value;
 
-    Option(String name, T value, DynamicStorage config) {
-        super(config);
+    Option(@NotNull String name, T value, @NotNull DynamicStorage storage) {
+        super(storage);
         this.name = name;
         this.value = value;
     }
@@ -18,7 +21,7 @@ public final class Option<T> extends DynamicStorageEntry
     }
 
     public void setValue(@NotNull T value) {
-        this.value = value;
+        this.value =  value;
     }
 
     @SuppressWarnings("unchecked")
