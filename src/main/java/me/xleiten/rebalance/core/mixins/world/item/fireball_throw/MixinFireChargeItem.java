@@ -26,7 +26,7 @@ public abstract class MixinFireChargeItem extends Item
         if (result.getResult() == ActionResult.PASS) {
             user.getStackInHand(hand).decrementUnlessCreative(1, user);
             var pos = user.getEyePos();
-            var entity = new SmallExplosiveFireballEntity(world, user, pos.x, pos.y - user.getDimensions(user.getPose()).width() / 4, pos.z, 2);
+            var entity = new SmallExplosiveFireballEntity(world, user, pos.x, pos.y - user.getDimensions(user.getPose()).width() / 4, pos.z, me.xleiten.rebalance.Settings.FIREBALL_THROWING__POWER.value());
             entity.deflect(ProjectileDeflection.REDIRECTED, user, user, true);
             user.getItemCooldownManager().set(this, me.xleiten.rebalance.Settings.FIREBALL_THROWING__COOLDOWN.value());
             world.spawnEntity(entity);
