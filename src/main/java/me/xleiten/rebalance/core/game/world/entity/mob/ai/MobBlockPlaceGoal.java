@@ -4,7 +4,7 @@ import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.math.RandomHelper;
 import net.minecraft.block.Block;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -16,14 +16,14 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class HostileEntityPlaceBlockGoal extends Goal
+public final class MobBlockPlaceGoal extends Goal
 {
-    private final HostileEntity mob;
+    private final MobEntity mob;
     private final World world;
 
     private int blockPlaceCooldown = 20;
 
-    public HostileEntityPlaceBlockGoal(@NotNull HostileEntity mob)
+    public MobBlockPlaceGoal(@NotNull MobEntity mob)
     {
         this.mob = mob;
         this.world = mob.getWorld();
@@ -46,9 +46,9 @@ public final class HostileEntityPlaceBlockGoal extends Goal
                     mob.swingHand(Hand.MAIN_HAND);
                 }
             }
-            blockPlaceCooldown = RandomHelper.range(mob.getRandom(), Settings.AI_ZOMBIE_BLOCK_PLACE__PLACE_COOLDOWN.value());
+            blockPlaceCooldown = RandomHelper.range(mob.getRandom(), Settings.AI_MOB_BLOCK_PLACE__PLACE_COOLDOWN.value());
         } else {
-            if (blockPlaceCooldown == Settings.AI_ZOMBIE_BLOCK_PLACE__TICKS_AFTER_JUMP_TO_PLACE_BLOCK.value()) {
+            if (blockPlaceCooldown == Settings.AI_MOB_BLOCK_PLACE__TICKS_AFTER_JUMP_TO_PLACE_BLOCK.value()) {
                 mob.getJumpControl().setActive();
             }
         }
@@ -60,7 +60,7 @@ public final class HostileEntityPlaceBlockGoal extends Goal
         world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
         world.playSound(mob, pos, blockState.getSoundGroup().getPlaceSound(), SoundCategory.BLOCKS, 1, 1);
         world.emitGameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Emitter.of(mob, blockState));
-        if (!Settings.AI_ZOMBIE_BLOCK_PLACE__INFINITE_BLOCKS.value())
+        if (!Settings.AI_MOB_BLOCK_PLACE__INFINITE_BLOCKS.value())
             stack.decrement(1);
     }
 

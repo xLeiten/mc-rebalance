@@ -122,14 +122,14 @@ public final class Settings
     // AI
     public static final Section AI = ENTITIES.section("AI");
     
-    public static final Section AI_ZOMBIE_BLOCK_BREAK = AI.section("Mob block breaking");
-    public static final Option<IntRange> AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN = AI_ZOMBIE_BLOCK_BREAK.option("search-new-block-cooldown", Range.create(6, 12));
-    public static final Option<Integer> AI_ZOMBIE_BLOCK_BREAK__MAX_BREAK_TICKS = AI_ZOMBIE_BLOCK_BREAK.option("max-block-break-ticks", 100);
+    public static final Section AI_MOB_BLOCK_BREAK = AI.section("Mob block breaking");
+    public static final Option<IntRange> AI_MOB_BLOCK_BREAK__SEARCH_COOLDOWN = AI_MOB_BLOCK_BREAK.option("search-new-block-cooldown", Range.create(6, 12));
+    public static final Option<Integer> AI_MOB_BLOCK_BREAK__MAX_BREAK_TICKS = AI_MOB_BLOCK_BREAK.option("max-block-break-ticks", 100);
     
-    public static final Section AI_ZOMBIE_BLOCK_PLACE = AI.section("Mob block placing");
-    public static final Option<IntRange> AI_ZOMBIE_BLOCK_PLACE__PLACE_COOLDOWN = AI_ZOMBIE_BLOCK_PLACE.option("block-place-cooldown", Range.create(20, 40));
-    public static final Option<Integer> AI_ZOMBIE_BLOCK_PLACE__TICKS_AFTER_JUMP_TO_PLACE_BLOCK = AI_ZOMBIE_BLOCK_PLACE.option("ticks-after-jump-to-place-block", 3);
-    public static final Option<Boolean> AI_ZOMBIE_BLOCK_PLACE__INFINITE_BLOCKS = AI_ZOMBIE_BLOCK_PLACE.option("infinite-blocks", false);
+    public static final Section AI_MOB_BLOCK_PLACE = AI.section("Mob block placing");
+    public static final Option<IntRange> AI_MOB_BLOCK_PLACE__PLACE_COOLDOWN = AI_MOB_BLOCK_PLACE.option("block-place-cooldown", Range.create(20, 40));
+    public static final Option<Integer> AI_MOB_BLOCK_PLACE__TICKS_AFTER_JUMP_TO_PLACE_BLOCK = AI_MOB_BLOCK_PLACE.option("ticks-after-jump-to-place-block", 3);
+    public static final Option<Boolean> AI_MOB_BLOCK_PLACE__INFINITE_BLOCKS = AI_MOB_BLOCK_PLACE.option("infinite-blocks", false);
 
     public static final Option<DoubleRange> AI__HOSTILE_FOLLOW_RANGE = AI.option("hostile-follow-range", Range.create(32.0, 52.0));
     public static final Option<Boolean> AI__LOOK_AT_TARGET_EVERY_TICK = AI.option("look-at-target-every-tick", true);

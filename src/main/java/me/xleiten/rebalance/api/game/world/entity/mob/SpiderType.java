@@ -23,7 +23,8 @@ public enum SpiderType {
 
   DARK_FOREST(
           "dark_forest",
-          BiomeKeys.DARK_FOREST),
+          BiomeKeys.DARK_FOREST
+  ),
 
   DESERT(
           "desert",

@@ -5,8 +5,8 @@ import com.llamalad7.mixinextras.injector.ModifyReceiver;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import me.xleiten.rebalance.api.game.world.entity.mob.Zombie;
 import me.xleiten.rebalance.api.game.world.tag.RebalanceDamageTypeTags;
-import me.xleiten.rebalance.core.game.world.entity.mob.ai.HostileEntityBlockBreakGoal;
-import me.xleiten.rebalance.core.game.world.entity.mob.ai.HostileEntityPlaceBlockGoal;
+import me.xleiten.rebalance.core.game.world.entity.mob.ai.MobBlockBreakGoal;
+import me.xleiten.rebalance.core.game.world.entity.mob.ai.MobBlockPlaceGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.TargetPredicate;
@@ -88,8 +88,6 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
         }
     }
 
-    // injectors
-
     @ModifyArgs(
             method = "initCustomGoals",
             at = @At(
@@ -134,8 +132,8 @@ public abstract class MixinZombieEntity extends MixinHostileEntity implements Zo
             at = @At("HEAD")
     )
     protected void onCustomGoalsSetup(CallbackInfo ci) {
-        goalSelector.add(3, new HostileEntityBlockBreakGoal((ZombieEntity) (Object) this));
-        goalSelector.add(3, new HostileEntityPlaceBlockGoal((ZombieEntity) (Object) this));
+        goalSelector.add(3, new MobBlockBreakGoal((ZombieEntity) (Object) this));
+        goalSelector.add(3, new MobBlockPlaceGoal((ZombieEntity) (Object) this));
     }
 
     @Override

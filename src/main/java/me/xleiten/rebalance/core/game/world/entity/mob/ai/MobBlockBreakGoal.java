@@ -8,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ToolItem;
 import net.minecraft.util.Hand;
@@ -19,7 +18,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class HostileEntityBlockBreakGoal extends Goal
+public final class MobBlockBreakGoal extends Goal
 {
     private final MobEntity mob;
     private final EntityNavigation navigation;
@@ -29,16 +28,16 @@ public final class HostileEntityBlockBreakGoal extends Goal
     private BlockPos lastNavigationPos;
     private BlockPos miningPos;
 
-    private float checkBlocksCooldown;
+    private int checkBlocksCooldown;
     private float breakTicks = 0;
 
-    public HostileEntityBlockBreakGoal(@NotNull HostileEntity mob)
+    public MobBlockBreakGoal(@NotNull MobEntity mob)
     {
         this.mob = mob;
         this.world = mob.getWorld();
         this.random = mob.getRandom();
         this.navigation = mob.getNavigation();
-        this.checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
+        this.checkBlocksCooldown = RandomHelper.range(random, Settings.AI_MOB_BLOCK_BREAK__SEARCH_COOLDOWN.value());
     }
 
     @Override
@@ -70,8 +69,6 @@ public final class HostileEntityBlockBreakGoal extends Goal
                     return false;
             }
         }
-
-        // will use self position if path is empty
         lastNavigationPos = mob.getBlockPos();
         return true;
     }
@@ -92,7 +89,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
         if (target == null) return;
 
         if (checkBlocksCooldown-- <= 0) {
-            checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
+            checkBlocksCooldown = RandomHelper.range(random, Settings.AI_MOB_BLOCK_BREAK__SEARCH_COOLDOWN.value());
             var pos = findNextPosTo(target);
             if (pos != null) {
                 if (miningPos == null) {
@@ -103,7 +100,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
         }
 
         if (miningPos != null) {
-            if (breakTicks < Settings.AI_ZOMBIE_BLOCK_BREAK__MAX_BREAK_TICKS.value()) {
+            if (breakTicks < Settings.AI_MOB_BLOCK_BREAK__MAX_BREAK_TICKS.value()) {
                 if (mob.getPos().distanceTo(miningPos.toCenterPos()) <= 3) {
                     var stage = (int) (((Mob) mob).rebalanceMod$calcBlockBreakingDelta(miningPos) * breakTicks * 10);
                     if (stage < 10) {
@@ -112,7 +109,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
                         mob.swingHand(Hand.MAIN_HAND);
                     } else {
                         mob.getWorld().breakBlock(miningPos, true, mob);
-                        checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
+                        checkBlocksCooldown = RandomHelper.range(random, Settings.AI_MOB_BLOCK_BREAK__SEARCH_COOLDOWN.value());
                         stop();
                         return;
                     }

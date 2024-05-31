@@ -57,6 +57,4 @@ accessible field net/minecraft/entity/decoration/DisplayEntity LEFT_ROTATION Lne
 accessible field net/minecraft/entity/decoration/DisplayEntity RIGHT_ROTATION Lnet/minecraft/entity/data/TrackedData;
 accessible field net/minecraft/entity/decoration/DisplayEntity GLOW_COLOR_OVERRIDE Lnet/minecraft/entity/data/TrackedData;
 
-accessible method net/minecraft/entity/attribute/EntityAttributeInstance onUpdate ()V
-
 
