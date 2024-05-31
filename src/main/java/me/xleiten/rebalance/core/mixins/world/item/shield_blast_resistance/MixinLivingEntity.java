@@ -1,7 +1,7 @@
 package me.xleiten.rebalance.core.mixins.world.item.shield_blast_resistance;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.config.Option;
+import me.xleiten.rebalance.Settings;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -19,22 +19,23 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.xleiten.rebalance.Settings.SHIELD_REWORK;
-
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity extends Entity
 {
-    @Unique private static final Option<Float> SHIELD_EXPLOSION_ABSORPTION = SHIELD_REWORK.option("explosion-absorption-percent", 0.90f);
-    @Unique private static final Option<Float> SHIELD_BLAST_RESISTANCE_MULT_PER_LEVEL = SHIELD_REWORK.option("blast-resistance-absorption-percent-per-level", 0.15f);
-
     @Shadow public abstract Hand getActiveHand();
     @Shadow protected ItemStack activeItemStack;
+
+    @Shadow public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
+
+    @Shadow
+    public static EquipmentSlot getSlotForHand(Hand hand) {
+        return null;
+    }
 
     protected MixinLivingEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -53,7 +54,7 @@ public abstract class MixinLivingEntity extends Entity
     protected float modifyDamageByBlastResistance(float value, @Local(argsOnly = true) DamageSource source) {
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             var level = EnchantmentHelper.getLevel(Enchantments.BLAST_PROTECTION, activeItemStack);
-            return level > 0 ? (value * (1 - (level * SHIELD_BLAST_RESISTANCE_MULT_PER_LEVEL.getValue()))) : value;
+            return level > 0 ? (value * (1 - (level * Settings.ITEM_SHIELD__BLAST_RESISTANCE_PER_LEVEL.value()))) : value;
         }
         return value;
     }
@@ -70,7 +71,7 @@ public abstract class MixinLivingEntity extends Entity
     )
     protected float tryAbsorbExplosionDamage(float value, @Local(ordinal = 2) float g, @Local(argsOnly = true) DamageSource source) {
         if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-            return (1 - SHIELD_EXPLOSION_ABSORPTION.getValue()) * g;
+            return (1 - Settings.ITEM_SHIELD__EXPLOSION_ABSORPTION.value()) * g;
         }
         return value;
     }
@@ -84,7 +85,7 @@ public abstract class MixinLivingEntity extends Entity
             if (amount >= ShieldItem.MIN_DAMAGE_AMOUNT_TO_BREAK) {
                 int i = 1 + MathHelper.floor(amount);
                 Hand hand = this.getActiveHand();
-                this.activeItemStack.damage(i, (LivingEntity) (Object) this, entity -> {});
+                this.activeItemStack.damage(i, (LivingEntity) (Object) this, getSlotForHand(hand));
                 if (this.activeItemStack.isEmpty()) {
                     this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 0.8F, 0.8F + this.getWorld().random.nextFloat() * 0.4F);
                     if (hand == Hand.MAIN_HAND) {

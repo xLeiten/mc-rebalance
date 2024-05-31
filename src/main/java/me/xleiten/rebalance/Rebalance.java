@@ -9,15 +9,9 @@ import me.xleiten.rebalance.core.components.PlayerSitting;
 import me.xleiten.rebalance.core.components.TabServerInfo;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.IngredientsInfo;
-import me.xleiten.rebalance.core.game.ServerMetadata;
+import me.xleiten.rebalance.core.game.world.item.ArmorConfig;
 import me.xleiten.rebalance.util.StringUtils;
-import me.xleiten.rebalance.util.math.DoubleRange;
-import me.xleiten.rebalance.util.math.FloatRange;
-import me.xleiten.rebalance.util.math.IntRange;
 import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -25,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static net.minecraft.server.command.CommandManager.literal;
@@ -35,16 +28,12 @@ public final class Rebalance extends ServerMod
     public static String MOD_ID = "rebalance";
 
     public static final Logger LOGGER = LoggerFactory.getLogger(StringUtils.capitalize(MOD_ID));
-    //public static final StorageManager STORAGE_MANAGER = new StorageManager();
     public static final DynamicStorage MAIN_STORAGE = DynamicStorage.create(MOD_ID)
-            //.addTo(STORAGE_MANAGER)
             .addTypeAdapters(
-                    new IntRange.Type(),
-                    new DoubleRange.Type(),
-                    new FloatRange.Type(),
-                    new ServerMetadata.Type(),
-                    new IngredientsInfo.Type()
+                    new IngredientsInfo.Type(),
+                    new ArmorConfig.Type()
             )
+            .clearUnusedOnSave(true)
             .setLogger(LOGGER)
             .load();
 
@@ -61,7 +50,7 @@ public final class Rebalance extends ServerMod
 
     @Override
     protected void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess access, CommandManager.RegistrationEnvironment environment) {
-        dispatcher.register(literal("rebalance-config").requires(source -> source.hasPermissionLevel(4))
+        dispatcher.register(literal("rm-config").requires(source -> source.hasPermissionLevel(4))
                 .then(literal("load").executes(context -> {
                     CompletableFuture.runAsync(() -> storage.load(result -> context.getSource().sendFeedback(() -> Text.of("Результат операции: " + result), true)));
                     return 1;

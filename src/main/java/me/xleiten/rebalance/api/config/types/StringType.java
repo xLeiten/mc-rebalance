@@ -5,7 +5,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import org.jetbrains.annotations.NotNull;
 
-public final class StringType extends PrimitiveType<String> {
+public final class StringType extends PrimitiveType<String>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "S";

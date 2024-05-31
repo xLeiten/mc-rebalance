@@ -1,78 +1,64 @@
 package me.xleiten.rebalance.util;
 
-import me.xleiten.rebalance.Rebalance;
+import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import me.xleiten.rebalance.api.game.world.item.enchantment.ModifiedEnchantment;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class EnchantmentUtils
+public final class EnchantmentUtils
 {
-    public enum SearchMode {
-        FIRST,
-        LAST
-    }
-
-    public static int countEnchantments(@NotNull Function<Enchantment, Boolean> filter, @NotNull ItemStack stack) {
-        return countEnchantments(filter, EnchantmentHelper.get(stack).keySet());
-    }
-
-    public static int countEnchantments(@NotNull Function<Enchantment, Boolean> filter, @NotNull Collection<Enchantment> enchantments) {
-        int counter = 0;
-        for (Enchantment enchantment: enchantments) {
+    public static int countEnchantments(@NotNull Function<RegistryEntry<Enchantment>, Boolean> filter, @NotNull Map<RegistryEntry<Enchantment>, Integer> enchantments) {
+        short count = 0;
+        for (RegistryEntry<Enchantment> enchantment: enchantments.keySet()) {
             if (filter.apply(enchantment))
-                counter++;
+                count++;
         }
-        return counter;
+        return count;
     }
 
-    public static int removeConflicts(ItemStack stack, SearchMode mode) {
-        var enchantments = EnchantmentHelper.get(stack);
-        var result = removeConflicts(enchantments, stack, mode);
-        EnchantmentHelper.set(enchantments, stack);
-        return result;
-    }
-
-    public static int removeConflicts(@NotNull Map<Enchantment, Integer> enchantments, @NotNull ItemStack stack, SearchMode mode) {
-        var enchantsKeys = new LinkedHashSet<>(enchantments.keySet());
-        int removes = 0;
-        switch (mode) {
-            case FIRST -> {
-                for (Enchantment enchantment : enchantsKeys) {
-                    if (checkOrRemove(enchantment, enchantments, stack)) removes++;
-                }
-            }
-            case LAST -> {
-                var keysIterator = new LinkedList<>(enchantsKeys).descendingIterator();
-                while (keysIterator.hasNext()) {
-                    if (checkOrRemove(keysIterator.next(), enchantments, stack)) removes++;
-                }
+    public static Map<RegistryEntry<Enchantment>, Integer> removeConflicts(@NotNull Map<RegistryEntry<Enchantment>, Integer> enchantments, @NotNull ItemStack stack, boolean reverse) {
+        var newMap = new Object2IntLinkedOpenHashMap<>(enchantments);
+        if (!reverse) {
+            for (RegistryEntry<Enchantment> entry : enchantments.keySet())
+                checkOrRemove(newMap, entry, stack);
+        } else {
+            var keys = new LinkedList<>(enchantments.keySet()).descendingIterator();
+            while (keys.hasNext()) {
+                checkOrRemove(newMap, keys.next(), stack);
             }
         }
-        return removes;
+        return newMap;
     }
 
-    public static int removeConflicts(@NotNull List<EnchantmentLevelEntry> enchantmentLevelEntries, @NotNull ItemStack stack) {
-        Map<Enchantment, Integer> converted = enchantmentLevelEntries.stream().collect(Collectors.toMap(it -> it.enchantment, it -> it.level));
-        var result = removeConflicts(converted, stack, SearchMode.FIRST);
-        enchantmentLevelEntries.removeIf(it -> !converted.containsKey(it.enchantment));
-        return result;
+    public static <E> Map<RegistryEntry<Enchantment>, Integer> mapFrom(Iterable<E> iterable, Function<E, RegistryEntry<Enchantment>> enchantment, Function<E, Integer> level) {
+        var map = new Object2IntLinkedOpenHashMap<RegistryEntry<Enchantment>>();
+        iterable.forEach(it -> map.put(enchantment.apply(it), (int) level.apply(it)));
+        return map;
     }
 
-    private static boolean checkOrRemove(Enchantment enchantment, Map<Enchantment, Integer> enchantments, ItemStack stack) {
-        Rebalance.LOGGER.info("enchantment check: " + Registries.ENCHANTMENT.getId(enchantment));
-        if (!((ModifiedEnchantment) enchantment).rebalanceMod$canAccept(enchantments, stack)) {
+    public static Map<RegistryEntry<Enchantment>, Integer> mapFrom(@NotNull Iterable<EnchantmentLevelEntry> enchantments) {
+        return mapFrom(enchantments, it -> it.enchantment.getRegistryEntry(), it -> it.level);
+    }
+
+    public static Map<RegistryEntry<Enchantment>, Integer> mapFrom(@NotNull ItemEnchantmentsComponent enchantments) {
+        return mapFrom(enchantments.getEnchantmentsMap(), Map.Entry::getKey, Object2IntMap.Entry::getIntValue);
+    }
+
+    public static Map<RegistryEntry<Enchantment>, Integer> mapFrom(@NotNull ItemStack stack) {
+        return mapFrom(stack.getEnchantments());
+    }
+
+    private static void checkOrRemove(@NotNull Map<RegistryEntry<Enchantment>, Integer> enchantments, @NotNull RegistryEntry<Enchantment> enchantment, @NotNull ItemStack stack) {
+        if (!((ModifiedEnchantment) enchantment.value()).rebalanceMod$canAccept(enchantments, stack))
             enchantments.remove(enchantment);
-            return true;
-        }
-        return false;
     }
 }

@@ -1,14 +1,13 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(CarvedPumpkinBlock.class)
-public abstract class MixinCarvedPumpkinBlock {
-
+public abstract class MixinCarvedPumpkinBlock
+{
     @Inject(
             method = "trySpawnEntity",
             at = @At(
@@ -27,9 +26,8 @@ public abstract class MixinCarvedPumpkinBlock {
                     shift = At.Shift.AFTER
             )
     )
-    private void onSnowGolemBuild(World world, BlockPos pos, CallbackInfo ci, @Local SnowGolemEntity snowGolemEntity) {
-        ((InitializableMobEntity) snowGolemEntity).cringeMod$onMobInitialize((ServerWorld) world, world.getRandom(), SpawnReason.GOLEM, snowGolemEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(snowGolemEntity, (ServerWorld) world, SpawnReason.GOLEM, snowGolemEntity.getPos());
+    private void onSnowGolemBuild(World world, BlockPos pos, CallbackInfo ci, @Local SnowGolemEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn((ServerWorldAccess) world, world.getRandom(), SpawnReason.GOLEM);
     }
 
     @Inject(
@@ -41,9 +39,7 @@ public abstract class MixinCarvedPumpkinBlock {
                     shift = At.Shift.AFTER
             )
     )
-    private void onIronGolemBuild(World world, BlockPos pos, CallbackInfo ci, @Local IronGolemEntity ironGolemEntity) {
-        ((InitializableMobEntity) ironGolemEntity).cringeMod$onMobInitialize((ServerWorld) world, world.getRandom(), SpawnReason.GOLEM, ironGolemEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(ironGolemEntity, (ServerWorld) world, SpawnReason.GOLEM, ironGolemEntity.getPos());
+    private void onIronGolemBuild(World world, BlockPos pos, CallbackInfo ci, @Local IronGolemEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn((ServerWorldAccess) world, world.getRandom(), SpawnReason.GOLEM);
     }
-
 }

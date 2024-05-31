@@ -1,11 +1,9 @@
 package me.xleiten.rebalance.core.components.hardcore_player_respawn;
 
-import me.xleiten.rebalance.Settings;
-import me.xleiten.rebalance.api.config.Option;
+import me.xleiten.rebalance.api.game.world.staged_process.StagedProcess;
 import me.xleiten.rebalance.api.game.world.text_display.DynamicTextDisplay;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.AwaitingStage;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.stages.RitualContext;
-import me.xleiten.rebalance.api.game.world.staged_process.StagedProcess;
 import me.xleiten.rebalance.util.Messenger;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -24,15 +22,13 @@ public final class RespawnablePlayer
     private final RitualContext context;
 
     RespawnablePlayer(ServerPlayerEntity player, HardcorePlayerRespawn component) {
-        this.existenceTime = component.MAX_TICKS.getValue();
+        this.existenceTime = component.maxTicks.value();
         this.context = new RitualContext(player, component);
         this.ritual = new StagedProcess<>(new AwaitingStage(context), ((result, context) -> remove()));
         this.existenceTimer = new DynamicTextDisplay(context.world, context.position.add(0, 0.5, 0), () -> Text.of(StringHelper.formatTicks(existenceTime, 20)));
         existenceTimer.setBillboardMode(DisplayEntity.BillboardMode.CENTER);
         existenceTimer.spawn();
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, existenceTime, 1, true, false, false));
-        //PlayerUtils.copyInventory(context.deadBody, player.getInventory());
-        //player.getInventory().clear();
     }
 
     public void tick() {
@@ -55,7 +51,6 @@ public final class RespawnablePlayer
 
     public void remove() {
         context.world.spawnParticles(ParticleTypes.CLOUD, context.deadBody.getX(), context.deadBody.getY(), context.deadBody.getZ(), context.random.nextBetween(5, 10), 0, 0, 0, 0);
-        //PlayerUtils.copyInventory(context.player, context.deadBody.getInventory());
         existenceTimer.discard();
         context.player.clearStatusEffects();
         context.deadBody.remove();
@@ -73,5 +68,4 @@ public final class RespawnablePlayer
     public ServerPlayerEntity getPlayer() {
         return context.player;
     }
-
 }

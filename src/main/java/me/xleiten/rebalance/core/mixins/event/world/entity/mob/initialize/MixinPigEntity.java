@@ -1,9 +1,8 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.PigEntity;
@@ -14,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PigEntity.class)
-public abstract class MixinPigEntity {
-
+public abstract class MixinPigEntity
+{
     @Inject(
             method = "onStruckByLightning",
             at = @At(
@@ -23,9 +22,7 @@ public abstract class MixinPigEntity {
                     target = "Lnet/minecraft/server/world/ServerWorld;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
             )
     )
-    public void onPigConversion(ServerWorld world, LightningEntity lightning, CallbackInfo ci, @Local ZombifiedPiglinEntity zombifiedPiglinEntity) {
-        ((InitializableMobEntity) zombifiedPiglinEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.CONVERSION, zombifiedPiglinEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(zombifiedPiglinEntity, world, SpawnReason.CONVERSION, zombifiedPiglinEntity.getPos());
+    public void onPigConversion(ServerWorld world, LightningEntity lightning, CallbackInfo ci, @Local ZombifiedPiglinEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.CONVERSION);
     }
-
 }

@@ -3,7 +3,8 @@ package me.xleiten.rebalance.api.component.events;
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class ModEvents
 {

@@ -1,11 +1,8 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.Entity;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -17,19 +14,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(StructureTemplate.class)
-public abstract class MixinStructureTemplate {
-
+public abstract class MixinStructureTemplate
+{
     @Inject(
             method = "method_17917",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/mob/MobEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;Lnet/minecraft/nbt/NbtCompound;)Lnet/minecraft/entity/EntityData;",
+                    target = "Lnet/minecraft/entity/mob/MobEntity;initialize(Lnet/minecraft/world/ServerWorldAccess;Lnet/minecraft/world/LocalDifficulty;Lnet/minecraft/entity/SpawnReason;Lnet/minecraft/entity/EntityData;)Lnet/minecraft/entity/EntityData;",
                     shift = At.Shift.AFTER
             )
     )
-    private static void onUhhGenerateStructure(BlockRotation blockRotation, BlockMirror blockMirror, Vec3d vec3d, boolean bl, ServerWorldAccess world, NbtCompound nbtCompound, Entity entity, CallbackInfo ci) {
-        ((InitializableMobEntity) entity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.STRUCTURE, entity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize((MobEntity) entity, world, SpawnReason.STRUCTURE, entity.getPos());
+    private static void onUhhGenerateStructure(BlockRotation blockRotation, BlockMirror blockMirror, Vec3d vec3d, boolean bl, ServerWorldAccess world, Entity entity, CallbackInfo ci) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.STRUCTURE);
     }
-
 }

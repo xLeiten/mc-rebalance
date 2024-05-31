@@ -18,5 +18,4 @@ public abstract class DynamicStorageEntry
     }
 
     abstract void copyFrom(DynamicStorageEntry source);
-
 }

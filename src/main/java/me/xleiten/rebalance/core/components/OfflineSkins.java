@@ -26,36 +26,32 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public final class OfflineSkins extends Component<Rebalance>
 {
-    private final Option<String> CACHE_FOLDER_PATH = settings.option("cache-folder-path", "players-skin-cache");
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    private final Path playersCacheDir = Path.of(CACHE_FOLDER_PATH.getValue());
+    private final Option<String> cacheFolderPath = settings.option("cache-folder-path", "players-skin-cache");
+    private final Gson gson = new Gson();
+    private final Path playersCacheDir = Path.of(cacheFolderPath.value());
 
     public OfflineSkins(@NotNull Rebalance mod) {
         super("Offline skins", mod);
-
         createDirectory();
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
+            if (!isEnabled()) return;
             var player = handler.getPlayer();
             if (player instanceof HumanEntity) return;
-
-            getSkinInfo(player.getName().getString()).whenComplete((result, ex) -> {
-                loadSkinFromFile(player.getGameProfile().getName()).ifPresentOrElse(
-                        data -> ((SkinHolder) player).cringeMod$setSkinData(data, true),
-                        () -> {
-                            if (result != null)
-                                ((SkinHolder) player).cringeMod$setSkinData(SkinData.copyFrom(result), true);
-                        });
-            });
+            getSkinForPlayer(player.getGameProfile().getName(), data -> data.ifPresent(
+                    skin -> ((SkinHolder) player).cringeMod$setSkinData(skin, true)
+            ));
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> {
+            if (!isEnabled()) return;
             var player = handler.getPlayer();
             if (player instanceof HumanEntity) return;
             saveSkinToFile(handler.getPlayer());
@@ -63,14 +59,18 @@ public final class OfflineSkins extends Component<Rebalance>
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(literal("skin").requires(ServerCommandSource::isExecutedByPlayer).then(argument("name", StringArgumentType.word()).executes(context -> {
-                var playerName = StringArgumentType.getString(context, "name");
-                getSkinInfo(playerName).whenComplete((result, ex) -> {
-                    var player = (ServerPlayerEntity) context.getSource().getPlayer();
-                    if (result != null) {
-                        player.sendMessage(Text.of("Найден скин игрока '" + playerName + "'"));
-                        ((SkinHolder) player).cringeMod$setSkinData(SkinData.copyFrom(result), true);
-                    } else
+                var player = (ServerPlayerEntity) context.getSource().getPlayer();
+                if (!isEnabled()) {
+                    player.sendMessage(Text.of("Установка скинов отключена"));
+                    return 1;
+                }
+                getSkinForPlayer(player.getGameProfile().getName(), (data) -> {
+                    data.ifPresentOrElse((skin) -> {
+                        player.sendMessage(Text.of("Найден скин игрока '" + name + "'"));
+                        ((SkinHolder) player).cringeMod$setSkinData(skin, true);
+                    }, () -> {
                         player.sendMessage(Text.of("Игрока с таким ником не существует"));
+                    });
                 });
                 return 1;
             })));
@@ -85,13 +85,15 @@ public final class OfflineSkins extends Component<Rebalance>
         }
     }
 
-    private Optional<SkinData> loadSkinFromFile(String playerName) {
-        try {
-            var path = playersCacheDir.resolve(playerName + ".json");
-            if (Files.exists(path))
-                return Optional.of(gson.fromJson(Files.newBufferedReader(path), SkinData.class));
-        } catch (IOException ignored) {}
-        return Optional.empty();
+    private CompletableFuture<Optional<SkinData>> loadSkinFromFile(String playerName) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                var path = playersCacheDir.resolve(playerName + ".json");
+                if (Files.exists(path))
+                    return Optional.of(gson.fromJson(Files.newBufferedReader(path), SkinData.class));
+            } catch (Exception ignored) { }
+            return Optional.empty();
+        });
     }
 
     private void saveSkinToFile(ServerPlayerEntity player) {
@@ -122,5 +124,20 @@ public final class OfflineSkins extends Component<Rebalance>
         });
     }
 
+    public void getSkinForPlayer(String playerName, Consumer<Optional<SkinData>> data) {
+        loadSkinFromFile(name).whenComplete((fileResult, ex1) -> {
+            if (fileResult != null && fileResult.isPresent()) {
+                data.accept(fileResult);
+            } else {
+                getSkinInfo(name).whenComplete((result, ex2) -> {
+                    if (result != null) {
+                        data.accept(Optional.of(SkinData.copyFrom(result)));
+                    } else {
+                        data.accept(Optional.empty());
+                    }
+                });
+            }
+        });
+    }
 
 }

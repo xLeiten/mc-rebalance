@@ -35,7 +35,7 @@ public abstract class Component<T extends Mod>
     }
 
     public final boolean isEnabled() {
-        return isEnabled.getValue();
+        return isEnabled.value();
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})

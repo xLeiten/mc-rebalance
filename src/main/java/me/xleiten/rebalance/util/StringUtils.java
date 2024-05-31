@@ -1,6 +1,6 @@
 package me.xleiten.rebalance.util;
 
-public class StringUtils
+public final class StringUtils
 {
     public static String capitalize(String input) {
         if (input.isEmpty()) return input;

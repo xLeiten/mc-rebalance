@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public final class LongType extends NumberType<Long> {
+public final class LongType extends NumberType<Long>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "L";

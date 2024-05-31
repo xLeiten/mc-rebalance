@@ -1,14 +1,11 @@
 package me.xleiten.rebalance.util;
 
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Range;
 
-public class ParticleHelper
+public final class ParticleHelper
 {
     public static final double RADIAN = Math.PI / 180;
 
@@ -22,22 +19,6 @@ public class ParticleHelper
 
     public static void spawn(ServerWorld world, ParticleEffect particle, double x, double y, double z, Vec3d delta, double speed, int count) {
         world.spawnParticles(particle, x, y, z, count, delta.x, delta.y, delta.z, speed);
-    }
-
-    public static void randomInBox(ServerWorld world, ParticleEffect particle, Box box, Vec3d offset, double speed, int count) {
-        Random random = world.getRandom();
-        double offsetX = box.getLengthX() * random.nextFloat();
-        double offsetY = box.getLengthY() * random.nextFloat();
-        double offsetZ = box.getLengthZ() * random.nextFloat();
-        world.spawnParticles(ParticleTypes.ENCHANT, box.minX + offsetX, box.minY + offsetY, box.minZ + offsetZ, count, offset.x, offset.y, offset.z, speed);
-    }
-
-    public static void randomInBox(ServerWorld world, ParticleEffect particle, Box box, Vec3d velocity, double speed) {
-        randomInBox(world, particle, box, velocity, speed, 0);
-    }
-
-    public static void randomInBox(ServerWorld world, ParticleEffect particle, Box box, double speed, int count) {
-        randomInBox(world, particle, box, new Vec3d(0, 0, 0), speed, count);
     }
 
     public static void spawnInLine(ServerWorld world, ParticleEffect particle, Vec3d start, Vec3d end, int count) {

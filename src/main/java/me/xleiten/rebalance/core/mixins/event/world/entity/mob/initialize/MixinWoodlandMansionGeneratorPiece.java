@@ -1,9 +1,8 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.structure.WoodlandMansionGenerator;
 import net.minecraft.util.math.BlockBox;
@@ -16,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WoodlandMansionGenerator.Piece.class)
-public abstract class MixinWoodlandMansionGeneratorPiece {
-
+public abstract class MixinWoodlandMansionGeneratorPiece
+{
     @Inject(
             method = "handleMetadata",
             at = @At(
@@ -25,9 +24,7 @@ public abstract class MixinWoodlandMansionGeneratorPiece {
                     target = "Lnet/minecraft/world/ServerWorldAccess;spawnEntityAndPassengers(Lnet/minecraft/entity/Entity;)V"
             )
     )
-    public void onPillagerGenerate(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox, CallbackInfo ci, @Local MobEntity mobEntity) {
-        ((InitializableMobEntity) mobEntity).cringeMod$onMobInitialize(world, random, SpawnReason.STRUCTURE, mobEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(mobEntity, world, SpawnReason.STRUCTURE, mobEntity.getPos());
+    public void onPillagerGenerate(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox, CallbackInfo ci, @Local MobEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.STRUCTURE);
     }
-
 }

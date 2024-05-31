@@ -1,8 +1,8 @@
 package me.xleiten.rebalance.core.components.hardcore_player_respawn.stages;
 
-import me.xleiten.rebalance.api.game.world.text_display.DynamicTextDisplay;
-import me.xleiten.rebalance.api.game.world.staged_process.Either;
 import me.xleiten.rebalance.api.game.world.staged_process.Stage;
+import me.xleiten.rebalance.api.game.world.staged_process.TickResult;
+import me.xleiten.rebalance.api.game.world.text_display.DynamicTextDisplay;
 import me.xleiten.rebalance.util.Messenger;
 import me.xleiten.rebalance.util.ParticleHelper;
 import net.minecraft.entity.decoration.DisplayEntity;
@@ -26,23 +26,24 @@ public final class SummoningStage extends Stage<RitualContext>
     private final DynamicTextDisplay timer;
     private final float xpDrainRatio;
     private float xpTempBank = 0;
-    private int ticks = context.component.RITUAL_TIME.getValue();
+    private int ticks = context.component.ritualTime.value();
 
-    public SummoningStage(@NotNull RitualContext context, @NotNull ServerPlayerEntity participant) {
+    public SummoningStage(@NotNull RitualContext context, @NotNull ServerPlayerEntity participant)
+    {
         super(context);
         context.world.playSound(context.deadBody, context.position.x, context.position.y, context.position.z, SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS);
         Messenger.sendMessage("Ритуал воскрешения начат", context.player, participant);
         participant.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, ticks, 4, true, false, false));
         participant.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, ticks, 1, true, false, false));
         this.participant = participant;
-        this.xpDrainRatio = context.component.XP_NEEDED.getValue() / ticks;
+        this.xpDrainRatio = context.component.xpNeeded.value() / ticks;
         this.timer = new DynamicTextDisplay(context.world, context.position.add(0, 0.8, 0), () -> Text.literal(StringHelper.formatTicks(ticks, 20)).formatted(Formatting.GOLD));
         timer.setBillboardMode(DisplayEntity.BillboardMode.CENTER);
         timer.spawn();
     }
 
     @Override
-    public @NotNull Either<Stage<RitualContext>, Boolean> tick() {
+    public @NotNull TickResult<Stage<RitualContext>> tick() {
         if (ticks > 0) {
             ticks--;
             if (canRitualContinue()) {
@@ -52,14 +53,14 @@ public final class SummoningStage extends Stage<RitualContext>
                 if (ticks % 80L == 0L && ticks > 0) {
                     context.world.playSound(context.deadBody, context.position.x, context.position.y, context.position.z, SoundEvents.BLOCK_BEACON_AMBIENT, SoundCategory.PLAYERS);
                 }
-                return Either.left(this);
+                return TickResult.stage(this);
             } else {
                 interruptRitual();
-                return Either.right(false);
+                return TickResult.complete(false);
             }
         } else {
             completeRitual();
-            return Either.right(true);
+            return TickResult.complete(true);
         }
     }
 
@@ -70,7 +71,7 @@ public final class SummoningStage extends Stage<RitualContext>
     }
 
     private boolean canRitualContinue() {
-        return !context.player.isDisconnected() && participant.canTakeDamage() && !participant.isDisconnected() && participant.squaredDistanceTo(context.deadBody) <= context.component.RADIUS_SQUARED;
+        return !context.player.isDisconnected() && participant.canTakeDamage() && !participant.isDisconnected() && participant.squaredDistanceTo(context.deadBody) <= context.component.summoningRadiusSquared;
     }
 
     private void completeRitual() {
@@ -118,7 +119,7 @@ public final class SummoningStage extends Stage<RitualContext>
             pos = createParticlePos(blockPos);
         }
 
-        var r = context.component.RADIUS.getValue();
+        var r = context.component.summoningRadius.value();
         for (int i = 0; i < 360; i += 2) {
             var t = ParticleHelper.RADIAN * i;
             context.world.spawnParticles(ParticleTypes.FLAME, blockPos.x + Math.sin(t) * r, pos.y, blockPos.z + Math.cos(t) * r, 1, 0, 0, 0, 0);

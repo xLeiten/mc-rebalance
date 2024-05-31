@@ -1,30 +1,28 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.ServerWorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ShulkerEntity.class)
-public abstract class MixinShulkerEntity {
-
+public abstract class MixinShulkerEntity
+{
     @Inject(
             method = "spawnNewShulker",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
+                    target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z",
+                    shift = At.Shift.AFTER
             )
     )
-    public void onShulkerDuplicate(CallbackInfo ci, @Local ShulkerEntity shulkerEntity) {
-        var world = (ServerWorld) shulkerEntity.getWorld();
-        ((InitializableMobEntity) shulkerEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.DUPLICATE, shulkerEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(shulkerEntity, world, SpawnReason.DUPLICATE, shulkerEntity.getPos());
+    public void onShulkerDuplicate(CallbackInfo ci, @Local(ordinal = 1) ShulkerEntity entity) {
+        var world = (ServerWorldAccess) entity.getWorld();
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.DUPLICATE);
     }
-
 }

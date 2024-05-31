@@ -1,9 +1,8 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.util.math.BlockBox;
@@ -16,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EndCityGenerator.Piece.class)
-public abstract class MixinEndCityGeneratorPiece {
-
+public abstract class MixinEndCityGeneratorPiece
+{
     @Inject(
             method = "handleMetadata",
             at = @At(
@@ -26,9 +25,7 @@ public abstract class MixinEndCityGeneratorPiece {
                     ordinal = 0
             )
     )
-    public void onShulkerSpawn(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox, CallbackInfo ci, @Local ShulkerEntity shulkerEntity) {
-        ((InitializableMobEntity) shulkerEntity).cringeMod$onMobInitialize(world, random, SpawnReason.STRUCTURE, shulkerEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(shulkerEntity, world, SpawnReason.STRUCTURE, shulkerEntity.getPos());
+    public void onShulkerSpawn(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox, CallbackInfo ci, @Local ShulkerEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.STRUCTURE);
     }
-
 }

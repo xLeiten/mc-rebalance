@@ -1,8 +1,8 @@
 package me.xleiten.rebalance.core.components.hardcore_player_respawn.stages;
 
 import com.google.common.collect.ImmutableMap;
-import me.xleiten.rebalance.api.game.world.staged_process.Either;
 import me.xleiten.rebalance.api.game.world.staged_process.Stage;
+import me.xleiten.rebalance.api.game.world.staged_process.TickResult;
 import me.xleiten.rebalance.api.game.world.text_display.StaticTextDisplay;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.decoration.DisplayEntity;
@@ -35,14 +35,15 @@ import java.util.Optional;
 
 public final class AwaitingStage extends Stage<RitualContext>
 {
-    private final float playerWidth = context.player.getDimensions(context.player.getPose()).width * 0.8F;
+    private final float playerWidth = context.player.getDimensions(context.player.getPose()).width() * 0.8F;
     private final RegistryEntry<SoundEvent> TELEPORT_SOUND = RegistryEntry.of(SoundEvents.ENTITY_ENDERMAN_TELEPORT);
 
-    private int searchPlayerTicks = context.component.PLAYER_SEARCH_COOLDOWN.getValue();
+    private int searchPlayerTicks = context.component.playerSearchCooldown.value();
     private final ImmutableMap<RitualIngredient, StaticTextDisplay> ingredients;
     private ServerPlayerEntity lastActive;
 
-    public AwaitingStage(@NotNull RitualContext context) {
+    public AwaitingStage(@NotNull RitualContext context)
+    {
         super(context);
         this.ingredients = createIngredientDisplays(context.position.add(0, 0.8, 0));
         context.deadBody.onInteract((player, hand) -> {
@@ -71,19 +72,19 @@ public final class AwaitingStage extends Stage<RitualContext>
     }
 
     @Override
-    public @NotNull Either<Stage<RitualContext>, Boolean> tick() {
+    public @NotNull TickResult<Stage<RitualContext>> tick() {
         checkDiedPlayerState();
         if (ingredients.entrySet().stream().allMatch(ingredientEntry -> ingredientEntry.getKey().isSatisfied())) {
             if (lastActive != null) {
-                return Either.left(new SummoningStage(context, lastActive));
+                return TickResult.stage(new SummoningStage(context, lastActive));
             } else {
                 if (searchPlayerTicks-- <= 0) {
-                    lastActive = (ServerPlayerEntity) context.world.getClosestPlayer(context.deadBody, context.component.RADIUS.getValue());
-                    searchPlayerTicks = context.component.PLAYER_SEARCH_COOLDOWN.getValue();
+                    lastActive = (ServerPlayerEntity) context.world.getClosestPlayer(context.deadBody, context.component.summoningRadius.value());
+                    searchPlayerTicks = context.component.playerSearchCooldown.value();
                 }
             }
         }
-        return Either.left(this);
+        return TickResult.stage(this);
     }
 
     @Override
@@ -94,7 +95,7 @@ public final class AwaitingStage extends Stage<RitualContext>
     private ImmutableMap<RitualIngredient, StaticTextDisplay> createIngredientDisplays(Vec3d position) {
         var map = ImmutableMap.<RitualIngredient, StaticTextDisplay>builder();
         var startPos = position;
-        for (Map.Entry<Identifier, Integer> ingredientInfo : context.component.INGREDIENTS.getValue().getInfo()) {
+        for (Map.Entry<Identifier, Integer> ingredientInfo : context.component.ingredients.value().getInfo()) {
             Item item = Registries.ITEM.get(ingredientInfo.getKey());
             if (item == Items.AIR) continue;
             var ingredient = new RitualIngredient(item, ingredientInfo.getValue());
@@ -143,13 +144,15 @@ public final class AwaitingStage extends Stage<RitualContext>
         }
     }
 
-    private static final class RitualIngredient {
+    private static final class RitualIngredient
+    {
         public final Item item;
         public final int amountNeeded;
 
         private int current = 0;
 
-        RitualIngredient(Item item, int amountNeeded) {
+        RitualIngredient(Item item, int amountNeeded)
+        {
             this.item = item;
             this.amountNeeded = amountNeeded;
         }

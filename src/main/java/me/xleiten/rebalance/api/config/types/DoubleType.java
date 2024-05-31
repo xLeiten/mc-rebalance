@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public final class DoubleType extends NumberType<Double> {
+public final class DoubleType extends NumberType<Double>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "D";

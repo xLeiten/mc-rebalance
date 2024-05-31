@@ -1,37 +1,36 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SkeletonEntity.class)
-public abstract class MixinSkeletonEntity extends AbstractSkeletonEntity {
-
+public abstract class MixinSkeletonEntity extends AbstractSkeletonEntity implements Mob
+{
     private MixinSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    @Inject(
+    @WrapOperation(
             method = "convertToStray",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/mob/SkeletonEntity;convertTo(Lnet/minecraft/entity/EntityType;Z)Lnet/minecraft/entity/mob/MobEntity;",
-                    shift = At.Shift.AFTER
+                    target = "Lnet/minecraft/entity/mob/SkeletonEntity;convertTo(Lnet/minecraft/entity/EntityType;Z)Lnet/minecraft/entity/mob/MobEntity;"
             )
     )
-    public void onSkeletonConversion(CallbackInfo ci) {
-        var world = (ServerWorld) getWorld();
-        ((InitializableMobEntity) this).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.CONVERSION, getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(this, world, SpawnReason.CONVERSION, getPos());
+    public MobEntity onSkeletonConversion(SkeletonEntity instance, EntityType<? extends SkeletonEntity> entityType, boolean b, Operation<MobEntity> original) {
+        var entity = original.call(instance, entityType, b);
+        var world = (ServerWorldAccess) entity.getWorld();
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.CONVERSION);
+        return entity;
     }
-
 }

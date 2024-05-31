@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public final class IntType extends NumberType<Integer> {
+public final class IntType extends NumberType<Integer>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "I";

@@ -1,12 +1,9 @@
 package me.xleiten.rebalance.core.mixins.world.entity.mob.passive_health_regen;
 
 import me.xleiten.rebalance.Settings;
-import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.entity.mob.Living;
-import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
-import me.xleiten.rebalance.util.math.IntRange;
-import me.xleiten.rebalance.util.math.RandomHelper;
-import me.xleiten.rebalance.util.math.Range;
+import me.xleiten.rebalance.api.game.world.tag.RebalanceEntityTypeTags;
+import me.xleiten.rebalance.api.math.RandomHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -21,12 +18,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MobEntity.class)
 public abstract class MixinMobEntity extends LivingEntity implements Living
 {
-    @Unique private static final Option<IntRange> HEALTH_REGEN_COOLDOWN = Settings.PASSIVE_HEALTH_REGENERATION.option("healing-cooldown", Range.create(15, 35));
-    @Unique private static final Option<Integer> HEALTH_REGEN_START_DELAY = Settings.PASSIVE_HEALTH_REGENERATION.option("after-damage-delay", 100);
-    @Unique private static final Option<Float> HEALTH_REGEN_PERCENT = Settings.PASSIVE_HEALTH_REGENERATION.option("healing-percent-of-max-health", 0.05f);
-
-    @Unique private int healthRegenCooldown = HEALTH_REGEN_COOLDOWN.getValue().min;
-    @Unique private int afterDamageTicks = HEALTH_REGEN_START_DELAY.getValue();
+    @Unique private int healthRegenCooldown = Settings.PASSIVE_HEALTH_REGENERATION__COOLDOWN.value().min;
+    @Unique private int afterDamageTicks = Settings.PASSIVE_HEALTH_REGENERATION__START_DELAY.value();
 
     protected MixinMobEntity(EntityType<? extends MobEntity> type, World world)
     {
@@ -43,8 +36,8 @@ public abstract class MixinMobEntity extends LivingEntity implements Living
             var maxHealth = getMaxHealth();
             if (health < maxHealth) {
                 if (healthRegenCooldown-- <= 0) {
-                    healthRegenCooldown = RandomHelper.range(random, HEALTH_REGEN_COOLDOWN.getValue());
-                    setHealth(health + maxHealth * HEALTH_REGEN_PERCENT.getValue());
+                    healthRegenCooldown = RandomHelper.range(random, Settings.PASSIVE_HEALTH_REGENERATION__COOLDOWN.value());
+                    setHealth(health + maxHealth * Settings.PASSIVE_HEALTH_REGENERATION__HEALTH_PERCENT.value());
                 }
             }
         }
@@ -56,7 +49,7 @@ public abstract class MixinMobEntity extends LivingEntity implements Living
     public boolean damage(DamageSource source, float amount) {
         var result = super.damage(source, amount);
         if (isAlive()) {
-            this.afterDamageTicks = HEALTH_REGEN_START_DELAY.getValue();
+            this.afterDamageTicks = Settings.PASSIVE_HEALTH_REGENERATION__START_DELAY.value();
         }
         return result;
     }

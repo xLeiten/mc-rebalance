@@ -2,6 +2,9 @@ package me.xleiten.rebalance.api.config;
 
 import com.google.gson.*;
 import me.xleiten.rebalance.api.config.types.*;
+import me.xleiten.rebalance.api.math.DoubleRange;
+import me.xleiten.rebalance.api.math.FloatRange;
+import me.xleiten.rebalance.api.math.IntRange;
 import net.minecraft.util.ActionResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +31,7 @@ public final class DynamicStorageLoader
             .create();
 
     final ConcurrentHashMap<String, IType<?, ?>> typeAdapters = new ConcurrentHashMap<>(
-            Set.of(new BoolType(), new StringType(), new IntType(), new LongType(), new ShortType(), new DoubleType(), new FloatType())
+            Set.of(new BoolType(), new StringType(), new IntType(), new LongType(), new ShortType(), new DoubleType(), new FloatType(), new IntRange.Type(), new DoubleRange.Type(), new FloatRange.Type())
                     .stream()
                     .collect(Collectors.toMap(IType::getTypeKey, Function.identity()))
     );
@@ -141,10 +144,10 @@ public final class DynamicStorageLoader
                 var key = entry.getKey();
                 var value = entry.getValue();
                 if (value instanceof Option<?> opt) {
-                    var type = getTypeAdapterFor(opt.getValue());
+                    var type = getTypeAdapterFor(opt.value());
                     if (type != null) {
                         /*if (opt.isValidated())*/
-                            object.add(type.getTypeKey() + ":" + key, type.serialize(opt.getValue(), context));
+                            object.add(type.getTypeKey() + ":" + key, type.serialize(opt.value(), context));
                         /*else
                             config.logger.warn("An option with key '" + key + "' is not validated. Skipping...");*/
                     } else

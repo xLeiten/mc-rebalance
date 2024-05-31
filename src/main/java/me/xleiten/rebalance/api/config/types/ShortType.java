@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public final class ShortType extends NumberType<Short> {
+public final class ShortType extends NumberType<Short>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "s";

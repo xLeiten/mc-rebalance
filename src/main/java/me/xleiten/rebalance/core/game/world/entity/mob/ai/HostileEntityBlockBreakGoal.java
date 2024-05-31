@@ -1,10 +1,8 @@
 package me.xleiten.rebalance.core.game.world.entity.mob.ai;
 
-import me.xleiten.rebalance.api.config.Option;
+import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
-import me.xleiten.rebalance.util.math.IntRange;
-import me.xleiten.rebalance.util.math.RandomHelper;
-import me.xleiten.rebalance.util.math.Range;
+import me.xleiten.rebalance.api.math.RandomHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -13,7 +11,6 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ToolItem;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -22,14 +19,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static me.xleiten.rebalance.Settings.HOSTILE_ENTITY_BLOCK_BREAK_GOAL;
-
 public final class HostileEntityBlockBreakGoal extends Goal
 {
-    private static final Option<IntRange> SEARCH_BLOCK_AFTER_BREAK_COOLDOWN = HOSTILE_ENTITY_BLOCK_BREAK_GOAL.option("search-block-after-break-cooldown", Range.create(3, 6));
-    private static final Option<IntRange> SEARCH_NEW_BLOCK_COOLDOWN = HOSTILE_ENTITY_BLOCK_BREAK_GOAL.option("search-new-block-cooldown", Range.create(20, 40));
-    private static final Option<Integer> MAX_BREAK_TICKS = HOSTILE_ENTITY_BLOCK_BREAK_GOAL.option("max-block-break-ticks", 100);
-
     private final MobEntity mob;
     private final EntityNavigation navigation;
     private final World world;
@@ -47,7 +38,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
         this.world = mob.getWorld();
         this.random = mob.getRandom();
         this.navigation = mob.getNavigation();
-        this.checkBlocksCooldown = RandomHelper.range(random, SEARCH_NEW_BLOCK_COOLDOWN.getValue());
+        this.checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
     }
 
     @Override
@@ -101,7 +92,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
         if (target == null) return;
 
         if (checkBlocksCooldown-- <= 0) {
-            checkBlocksCooldown = RandomHelper.range(random, SEARCH_NEW_BLOCK_COOLDOWN.getValue());
+            checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
             var pos = findNextPosTo(target);
             if (pos != null) {
                 if (miningPos == null) {
@@ -112,16 +103,16 @@ public final class HostileEntityBlockBreakGoal extends Goal
         }
 
         if (miningPos != null) {
-            if (breakTicks < MAX_BREAK_TICKS.getValue()) {
+            if (breakTicks < Settings.AI_ZOMBIE_BLOCK_BREAK__MAX_BREAK_TICKS.value()) {
                 if (mob.getPos().distanceTo(miningPos.toCenterPos()) <= 3) {
-                    var stage = (int) (((Mob) mob).cringeMod$calcBlockBreakingDelta(miningPos) * breakTicks * 10);
+                    var stage = (int) (((Mob) mob).rebalanceMod$calcBlockBreakingDelta(miningPos) * breakTicks * 10);
                     if (stage < 10) {
                         setBreakProgress(miningPos, stage);
                         mob.getLookControl().lookAt(miningPos.toCenterPos());
                         mob.swingHand(Hand.MAIN_HAND);
                     } else {
                         mob.getWorld().breakBlock(miningPos, true, mob);
-                        checkBlocksCooldown = RandomHelper.range(random, SEARCH_BLOCK_AFTER_BREAK_COOLDOWN.getValue());
+                        checkBlocksCooldown = RandomHelper.range(random, Settings.AI_ZOMBIE_BLOCK_BREAK__SEARCH_COOLDOWN.value());
                         stop();
                         return;
                     }
@@ -278,7 +269,7 @@ public final class HostileEntityBlockBreakGoal extends Goal
 
     private boolean isValidPos(BlockPos pos) {
         var state = world.getBlockState(pos);
-        return !state.isAir() && !state.canPathfindThrough(world, pos, NavigationType.LAND);
+        return !state.isAir() && !state.canPathfindThrough(NavigationType.LAND);
     }
 
 }

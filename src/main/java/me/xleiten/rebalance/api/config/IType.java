@@ -14,5 +14,4 @@ public interface IType<T, E extends JsonElement>
     @NotNull T deserialize(E element, JsonDeserializationContext context);
 
     @NotNull E serialize(T object, JsonSerializationContext context);
-
 }

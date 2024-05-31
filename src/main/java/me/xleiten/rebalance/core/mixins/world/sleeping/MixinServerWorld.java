@@ -1,7 +1,6 @@
 package me.xleiten.rebalance.core.mixins.world.sleeping;
 
 import me.xleiten.rebalance.Settings;
-import me.xleiten.rebalance.api.config.Option;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
@@ -18,7 +17,6 @@ import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -28,13 +26,9 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import static me.xleiten.rebalance.Settings.WORLD_SETTINGS;
-
 @Mixin(ServerWorld.class)
-public abstract class MixinServerWorld extends World {
-
-    @Unique private static final Option<Integer> MAX_NIGHT_SKIP_MULTIPLIER = Settings.CUSTOM_SLEEPING.option("night-skip-tick-multiplier", 20);
-
+public abstract class MixinServerWorld extends World
+{
     @Shadow @Final private SleepManager sleepManager;
 
     @Shadow public abstract void setTimeOfDay(long timeOfDay);
@@ -63,11 +57,10 @@ public abstract class MixinServerWorld extends World {
     public void canNightBeSkipped(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
         if (sleepManager.canSkipNight(0) && sleepManager.canResetTime(0, this.players)) {
             if (getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-                var multiplier = MAX_NIGHT_SKIP_MULTIPLIER.getValue() * (sleepManager.getSleeping() / this.players.size());
+                var multiplier = Settings.CUSTOM_SLEEPING__MAX_NIGHT_SKIP_MULTIPLIER.value() * (sleepManager.getSleeping() / this.players.size());
                 this.setTimeOfDay(this.getTimeOfDay() + multiplier);
                 server.getPlayerManager().sendToAll(new WorldTimeUpdateS2CPacket(getTime(), getTimeOfDay(), getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
             }
         }
     }
-
 }

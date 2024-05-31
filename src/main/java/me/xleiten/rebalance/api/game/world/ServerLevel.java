@@ -5,5 +5,5 @@ import net.minecraft.server.world.ServerEntityManager;
 
 public interface ServerLevel
 {
-    ServerEntityManager<Entity> cringeMod$getEntityManager();
+    ServerEntityManager<Entity> rebalanceMod$getEntityManager();
 }

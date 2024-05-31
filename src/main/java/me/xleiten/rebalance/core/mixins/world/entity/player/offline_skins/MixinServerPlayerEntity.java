@@ -102,7 +102,7 @@ public abstract class MixinServerPlayerEntity extends PlayerEntity implements Sk
         this.networkHandler.sendPacket(new HealthUpdateS2CPacket(this.getHealth(), this.getHungerManager().getFoodLevel(), this.hungerManager.getSaturationLevel()));
 
         for (StatusEffectInstance statusEffect : this.getStatusEffects()) {
-            this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(getId(), statusEffect));
+            this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(getId(), statusEffect, true));
         }
 
         var equipmentList = new ArrayList<Pair<EquipmentSlot, ItemStack>>();

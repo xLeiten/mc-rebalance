@@ -1,7 +1,6 @@
 package me.xleiten.rebalance.core.components;
 
 import me.xleiten.rebalance.Rebalance;
-import me.xleiten.rebalance.Settings;
 import me.xleiten.rebalance.api.component.Component;
 import me.xleiten.rebalance.api.config.Option;
 import me.xleiten.rebalance.api.game.world.ServerLevel;
@@ -21,9 +20,9 @@ import java.time.format.DateTimeFormatter;
 
 public final class TabServerInfo extends Component<Rebalance>
 {
-    private final Option<Integer> REFRESH_TICKS = settings.option("refresh-ticks", 10);
+    private final Option<Integer> refreshTicks = settings.option("refresh-ticks", 10);
 
-    private int ticks = REFRESH_TICKS.getValue();
+    private int ticks = refreshTicks.value();
 
     public TabServerInfo(@NotNull Rebalance mod)
     {
@@ -32,13 +31,13 @@ public final class TabServerInfo extends Component<Rebalance>
     }
 
     private void tick(MinecraftServer server) {
-        if (ticks-- <= 0) {
+        if (ticks-- <= 0 && isEnabled()) {
             server.getPlayerManager().getPlayerList().forEach(player -> {
                 player.networkHandler.sendPacket(new PlayerListHeaderS2CPacket(
                         buildHeader(player), buildFooter(player)
                 ));
             });
-            ticks = REFRESH_TICKS.getValue();
+            ticks = refreshTicks.value();
         }
     }
 
@@ -58,7 +57,7 @@ public final class TabServerInfo extends Component<Rebalance>
 
     public int calcHostileMobs(ServerWorld world) {
         int count = 0;
-        for (Entity entity: ((ServerLevel) world).cringeMod$getEntityManager().getLookup().iterate()) {
+        for (Entity entity: ((ServerLevel) world).rebalanceMod$getEntityManager().getLookup().iterate()) {
             if (entity instanceof Monster) {
                 count++;
             }

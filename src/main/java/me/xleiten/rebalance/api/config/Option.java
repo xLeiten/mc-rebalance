@@ -1,9 +1,6 @@
 package me.xleiten.rebalance.api.config;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Function;
 
 public final class Option<T> extends DynamicStorageEntry
 {
@@ -16,11 +13,11 @@ public final class Option<T> extends DynamicStorageEntry
         this.value = value;
     }
 
-    public T getValue() {
+    public T value() {
         return value;
     }
 
-    public void setValue(@NotNull T value) {
+    public void value(@NotNull T value) {
         this.value =  value;
     }
 
@@ -28,9 +25,9 @@ public final class Option<T> extends DynamicStorageEntry
     @Override
     public void copyFrom(DynamicStorageEntry source) {
         if (source instanceof Option<?> option) {
-            if (option.getValue().getClass() == value.getClass())
-                this.setValue((T) option.getValue());
+            if (option.value().getClass() == value.getClass())
+                this.value((T) option.value());
         } else
-            config.logger.warn("Attempt to copy option value from non option config entry. Skipping...");
+            config.logger.warn("Attempt to copy option value from non option config entry.");
     }
 }

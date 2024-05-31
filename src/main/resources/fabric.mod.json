@@ -13,9 +13,6 @@
     ],
     "server": [
       "me.xleiten.rebalance.Rebalance"
-    ],
-    "mm:early_risers": [
-      "me.xleiten.rebalance.core.asm.RebalanceFabricASMEntry"
     ]
   },
   "mixins": [

@@ -1,17 +1,21 @@
 package me.xleiten.rebalance.core.datagen;
 
-import me.xleiten.rebalance.api.game.world.biome.tag.RebalanceBiomeTags;
-import me.xleiten.rebalance.api.game.world.entity.tag.RebalanceEntityTypeTags;
-import me.xleiten.rebalance.api.game.world.item.tag.RebalanceItemTags;
+import me.xleiten.rebalance.api.game.world.tag.RebalanceBiomeTags;
+import me.xleiten.rebalance.api.game.world.tag.RebalanceDamageTypeTags;
+import me.xleiten.rebalance.api.game.world.tag.RebalanceEntityTypeTags;
+import me.xleiten.rebalance.api.game.world.tag.RebalanceItemTags;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.EntityTypeTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
@@ -28,6 +32,31 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
         pack.addProvider(EntityTagProvider::new);
         pack.addProvider(BiomeTagProvider::new);
         pack.addProvider(ItemTagProvider::new);
+        pack.addProvider(DamageTypesProvider::new);
+    }
+
+    private static class DamageTypesProvider extends FabricTagProvider<DamageType>
+    {
+        public DamageTypesProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+            super(output, RegistryKeys.DAMAGE_TYPE, registriesFuture);
+        }
+
+        @Override
+        protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+            getOrCreateTagBuilder(RebalanceDamageTypeTags.SUMMONS_ZOMBIE_REINFORCEMENT)
+                    .add(
+                            DamageTypes.MOB_ATTACK,
+                            DamageTypes.MOB_PROJECTILE,
+                            DamageTypes.MOB_ATTACK_NO_AGGRO,
+                            DamageTypes.PLAYER_ATTACK,
+                            DamageTypes.PLAYER_EXPLOSION,
+                            DamageTypes.SONIC_BOOM,
+                            DamageTypes.WITHER_SKULL,
+                            DamageTypes.INDIRECT_MAGIC,
+                            DamageTypes.STING,
+                            DamageTypes.THORNS
+                    );
+        }
     }
 
     private static class ItemTagProvider extends FabricTagProvider.ItemTagProvider
@@ -46,6 +75,10 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                             Items.NETHERITE_LEGGINGS,
                             Items.NETHERITE_BOOTS
                     );
+
+            getOrCreateTagBuilder(RebalanceItemTags.BLAST_RESISTANCE_ENCHANTABLE)
+                    .forceAddTag(ItemTags.ARMOR_ENCHANTABLE)
+                    .add(Items.SHIELD);
         }
     }
 

@@ -2,11 +2,9 @@ package me.xleiten.rebalance.api.config;
 
 import com.google.common.collect.ImmutableSet;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public final class Section extends DynamicStorageEntry
 {
@@ -29,7 +27,7 @@ public final class Section extends DynamicStorageEntry
                 if (!(entry instanceof Option<?> option1))
                     throw new IllegalArgumentException("Attempt to create an option with key '" + entryKey + "', which is already used by non option entry");
 
-                if (defaultValue.getClass() == option1.getValue().getClass()) {
+                if (defaultValue.getClass() == option1.value().getClass()) {
                     option1.validate();
                     return (Option<T>) option1;
                 } else {
@@ -75,7 +73,7 @@ public final class Section extends DynamicStorageEntry
                     entries.put(entry.getKey(), newEntry);
             }
         } else
-            config.logger.warn("Attempt to copy data to section from non section config entry. Skipping...");
+            config.logger.warn("Attempt to copy data to section from non section config entry.");
     }
 
     public int size() {

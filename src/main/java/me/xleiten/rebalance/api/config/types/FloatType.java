@@ -4,7 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.NotNull;
 
-public final class FloatType extends NumberType<Float> {
+public final class FloatType extends NumberType<Float>
+{
     @Override
     public @NotNull String getTypeKey() {
         return "F";

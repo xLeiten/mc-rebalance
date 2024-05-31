@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NameTagItem.class)
-public abstract class MixinNameTagItem {
-
+public abstract class MixinNameTagItem
+{
     @Inject(
             method = "useOnEntity",
             at = @At(
@@ -26,5 +26,4 @@ public abstract class MixinNameTagItem {
     protected void refreshHealthDisplayOfLivingEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         ((Living) entity).cringeMod$getHealthDisplay().updateCustomName(stack.getName());
     }
-
 }

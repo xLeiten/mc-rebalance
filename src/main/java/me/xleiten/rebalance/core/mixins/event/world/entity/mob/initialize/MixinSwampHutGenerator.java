@@ -1,9 +1,8 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.structure.SwampHutGenerator;
@@ -21,8 +20,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SwampHutGenerator.class)
-public abstract class MixinSwampHutGenerator {
-
+public abstract class MixinSwampHutGenerator
+{
     @Inject(
             method = "generate",
             at = @At(
@@ -30,9 +29,8 @@ public abstract class MixinSwampHutGenerator {
                     target = "Lnet/minecraft/world/StructureWorldAccess;spawnEntityAndPassengers(Lnet/minecraft/entity/Entity;)V"
             )
     )
-    public void onWitchGenerate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot, CallbackInfo ci, @Local WitchEntity witchEntity) {
-        ((InitializableMobEntity) witchEntity).cringeMod$onMobInitialize(world, random, SpawnReason.STRUCTURE, witchEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(witchEntity, world, SpawnReason.STRUCTURE, witchEntity.getPos());
+    public void onWitchGenerate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot, CallbackInfo ci, @Local WitchEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.STRUCTURE);
     }
 
     @Inject(
@@ -43,9 +41,7 @@ public abstract class MixinSwampHutGenerator {
                     shift = At.Shift.AFTER
             )
     )
-    public void onCatGenerate(ServerWorldAccess world, BlockBox box, CallbackInfo ci, @Local CatEntity catEntity) {
-        ((InitializableMobEntity) catEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.STRUCTURE, catEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(catEntity, world, SpawnReason.STRUCTURE, catEntity.getPos());
+    public void onCatGenerate(ServerWorldAccess world, BlockBox box, CallbackInfo ci, @Local CatEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.STRUCTURE);
     }
-
 }

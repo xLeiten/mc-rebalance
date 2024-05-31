@@ -3,8 +3,8 @@ package me.xleiten.rebalance.core.mixins.world.item.multiple_protection_enchantm
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import me.xleiten.rebalance.api.game.world.item.enchantment.ModifiedEnchantment;
+import me.xleiten.rebalance.util.EnchantmentUtils;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.function.EnchantRandomlyLootFunction;
 import net.minecraft.util.math.random.Random;
@@ -22,6 +22,6 @@ public abstract class MixinEnchantRandomlyLootFunction
             )
     )
     private ItemStack checkIfItemCanContainEnchantment(ItemStack stack, Enchantment enchantment, Random random, Operation<ItemStack> original) {
-        return ((ModifiedEnchantment) enchantment).rebalanceMod$canAccept(EnchantmentHelper.get(stack), stack) ? original.call(stack, enchantment, random) : stack;
+        return ((ModifiedEnchantment) enchantment).rebalanceMod$canAccept(EnchantmentUtils.mapFrom(stack), stack) ? original.call(stack, enchantment, random) : stack;
     }
 }

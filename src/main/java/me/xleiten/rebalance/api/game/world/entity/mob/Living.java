@@ -1,8 +1,8 @@
 package me.xleiten.rebalance.api.game.world.entity.mob;
 
-import me.xleiten.rebalance.api.game.world.entity.HealthDisplay;
 import me.xleiten.rebalance.api.game.event.world.entity.SpawnableEntity;
 import me.xleiten.rebalance.api.game.world.NbtHolder;
+import me.xleiten.rebalance.api.game.world.entity.HealthDisplay;
 import org.jetbrains.annotations.NotNull;
 
 public interface Living extends SpawnableEntity, NbtHolder

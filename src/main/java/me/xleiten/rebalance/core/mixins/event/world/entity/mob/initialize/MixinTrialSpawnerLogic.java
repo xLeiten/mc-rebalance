@@ -1,10 +1,9 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.block.spawner.TrialSpawnerLogic;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -17,8 +16,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Mixin(TrialSpawnerLogic.class)
-public abstract class MixinTrialSpawnerLogic {
-
+public abstract class MixinTrialSpawnerLogic
+{
     @Inject(
             method = "trySpawnMob",
             at = @At(
@@ -28,8 +27,6 @@ public abstract class MixinTrialSpawnerLogic {
             )
     )
     public void onTrialSpawnerSpawn(ServerWorld world, BlockPos pos, CallbackInfoReturnable<Optional<UUID>> cir, @Local MobEntity mobEntity) {
-        ((InitializableMobEntity) mobEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.TRIAL_SPAWNER, mobEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(mobEntity, world, SpawnReason.TRIAL_SPAWNER, mobEntity.getPos());
+        ((Mob) mobEntity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.TRIAL_SPAWNER);
     }
-
 }

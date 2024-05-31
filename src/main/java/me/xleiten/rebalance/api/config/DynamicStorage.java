@@ -34,9 +34,8 @@ public final class DynamicStorage
         return create(name, Path.of("config"));
     }
 
-    public DynamicStorage addTypeAdapter(@NotNull IType<?, ?> typeAdapter) {
+    public void addTypeAdapter(@NotNull IType<?, ?> typeAdapter) {
         loader.addType(typeAdapter);
-        return this;
     }
 
     public DynamicStorage addTypeAdapters(@NotNull IType<?, ?>...adapters) {

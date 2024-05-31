@@ -1,11 +1,10 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.SpawnGroup;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -22,8 +21,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SpawnHelper.class)
-public abstract class MixinSpawnHelper {
-
+public abstract class MixinSpawnHelper
+{
     @Inject(
             method = "spawnEntitiesInChunk(Lnet/minecraft/entity/SpawnGroup;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/chunk/Chunk;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/world/SpawnHelper$Checker;Lnet/minecraft/world/SpawnHelper$Runner;)V",
             at = @At(
@@ -31,9 +30,8 @@ public abstract class MixinSpawnHelper {
                     target = "Lnet/minecraft/server/world/ServerWorld;spawnEntityAndPassengers(Lnet/minecraft/entity/Entity;)V"
             )
     )
-    private static void onRandomMobSpawn(SpawnGroup group, ServerWorld world, Chunk chunk, BlockPos pos, SpawnHelper.Checker checker, SpawnHelper.Runner runner, CallbackInfo ci, @Local EntityData entityData, @Local MobEntity mobEntity) {
-        ((InitializableMobEntity) mobEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.NATURAL, mobEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(mobEntity, world, SpawnReason.NATURAL, mobEntity.getPos());
+    private static void onRandomMobSpawn(SpawnGroup group, ServerWorld world, Chunk chunk, BlockPos pos, SpawnHelper.Checker checker, SpawnHelper.Runner runner, CallbackInfo ci, @Local EntityData entityData, @Local MobEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.NATURAL);
     }
 
     @Inject(
@@ -44,9 +42,7 @@ public abstract class MixinSpawnHelper {
                     shift = At.Shift.AFTER
             )
     )
-    private static void onMobGenerate(ServerWorldAccess world, RegistryEntry<Biome> biomeEntry, ChunkPos chunkPos, Random random, CallbackInfo ci, @Local MobEntity mobEntity) {
-        ((InitializableMobEntity) mobEntity).cringeMod$onMobInitialize(world, random, SpawnReason.CHUNK_GENERATION, mobEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(mobEntity, world, SpawnReason.CHUNK_GENERATION, mobEntity.getPos());
+    private static void onMobGenerate(ServerWorldAccess world, RegistryEntry<Biome> biomeEntry, ChunkPos chunkPos, Random random, CallbackInfo ci, @Local MobEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.CHUNK_GENERATION);
     }
-
 }

@@ -59,4 +59,4 @@ accessible field net/minecraft/entity/decoration/DisplayEntity GLOW_COLOR_OVERRI
 
 accessible method net/minecraft/entity/attribute/EntityAttributeInstance onUpdate ()V
 
-extendable class net/minecraft/enchantment/EnchantmentTarget
+

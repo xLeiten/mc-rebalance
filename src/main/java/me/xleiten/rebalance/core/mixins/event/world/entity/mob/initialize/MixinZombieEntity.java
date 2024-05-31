@@ -1,17 +1,16 @@
 package me.xleiten.rebalance.core.mixins.event.world.entity.mob.initialize;
 
-import com.llamalad7.mixinextras.injector.ModifyReceiver;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.MobEntityEvents;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.SpawnReason;
-import me.xleiten.rebalance.api.game.event.world.entity.mob.InitializableMobEntity;
+import me.xleiten.rebalance.api.game.world.entity.mob.Mob;
+import me.xleiten.rebalance.api.game.world.entity.mob.SpawnReason;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -27,15 +26,14 @@ public abstract class MixinZombieEntity {
             method = "damage",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/attribute/EntityAttributeInstance;addPersistentModifier(Lnet/minecraft/entity/attribute/EntityAttributeModifier;)V",
-                    shift = At.Shift.AFTER,
-                    ordinal = 1
+                    target = "Lnet/minecraft/entity/mob/ZombieEntity;getAttributeInstance(Lnet/minecraft/registry/entry/RegistryEntry;)Lnet/minecraft/entity/attribute/EntityAttributeInstance;",
+                    ordinal = 1,
+                    shift = At.Shift.AFTER
             )
     )
-    public void onZombieReinforcementSpawn(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir, @Local ZombieEntity zombie) {
-        var world = (ServerWorld) zombie.getWorld();
-        ((InitializableMobEntity) zombie).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.REINFORCEMENT, zombie.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(zombie, world, SpawnReason.REINFORCEMENT, zombie.getPos());
+    public void onZombieReinforcementSpawn(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir, @Local(ordinal = 1) ZombieEntity entity) {
+        var world = (ServerWorldAccess) entity.getWorld();
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.REINFORCEMENT);
     }
 
     @Inject(
@@ -46,35 +44,32 @@ public abstract class MixinZombieEntity {
                     shift = At.Shift.AFTER
             )
     )
-    public void onZombieVillagerConversion(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir, @Local ZombieVillagerEntity zombie) {
-        ((InitializableMobEntity) zombie).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.CONVERSION, zombie.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(zombie, world, SpawnReason.CONVERSION, zombie.getPos());
+    public void onZombieVillagerConversion(ServerWorld world, LivingEntity other, CallbackInfoReturnable<Boolean> cir, @Local ZombieVillagerEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.CONVERSION);
     }
 
     @Inject(
             method = "initialize",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/ServerWorldAccess;spawnEntity(Lnet/minecraft/entity/Entity;)Z"
+                    target = "Lnet/minecraft/world/ServerWorldAccess;spawnEntity(Lnet/minecraft/entity/Entity;)Z",
+                    shift = At.Shift.AFTER
             )
     )
-    public void onChickenJockeySpawn(ServerWorldAccess world, LocalDifficulty difficulty, net.minecraft.entity.SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir, @Local ChickenEntity chickenEntity) {
-        ((InitializableMobEntity) chickenEntity).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.JOCKEY, chickenEntity.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(chickenEntity, world, SpawnReason.JOCKEY, chickenEntity.getPos());
+    public void onChickenJockeySpawn(ServerWorldAccess world, LocalDifficulty difficulty, net.minecraft.entity.SpawnReason spawnReason, EntityData entityData, CallbackInfoReturnable<EntityData> cir, @Local ChickenEntity entity) {
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.JOCKEY);
     }
 
-    @ModifyReceiver(
+    @WrapOperation(
             method = "convertTo",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/entity/mob/ZombieEntity;setCanBreakDoors(Z)V"
             )
     )
-    public ZombieEntity onZombieConversion(ZombieEntity instance, boolean canBreakDoors) {
-        var world = (ServerWorld) instance.getWorld();
-        ((InitializableMobEntity) instance).cringeMod$onMobInitialize(world, world.getRandom(), SpawnReason.CONVERSION, instance.getPos(), world.getDifficulty());
-        MobEntityEvents.INITIALIZE.invoker().initialize(instance, world, SpawnReason.CONVERSION, instance.getPos());
-        return instance;
+    private void onZombieConversion1(ZombieEntity entity, boolean canBreakDoors, Operation<Void> original) {
+        original.call(entity, canBreakDoors);
+        var world = (ServerWorldAccess) entity.getWorld();
+        ((Mob) entity).rebalanceMod$onFirstSpawn(world, world.getRandom(), SpawnReason.CONVERSION);
     }
-
 }

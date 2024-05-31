@@ -14,7 +14,7 @@ public abstract class MixinServerWorld implements ServerLevel
     @Shadow @Final private ServerEntityManager<Entity> entityManager;
 
     @Override
-    public ServerEntityManager<Entity> cringeMod$getEntityManager() {
+    public ServerEntityManager<Entity> rebalanceMod$getEntityManager() {
         return entityManager;
     }
 }

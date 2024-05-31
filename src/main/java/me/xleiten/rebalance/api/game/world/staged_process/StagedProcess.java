@@ -22,7 +22,7 @@ public final class StagedProcess<T extends StageContext>
     public void tick() {
         if (!completed) {
             var tickResult = stage.tick();
-            var left = tickResult.getLeft();
+            var left = tickResult.stage();
             if (left != null) {
                 if (stage != left) {
                     stage.onComplete();
@@ -30,7 +30,7 @@ public final class StagedProcess<T extends StageContext>
                 }
             } else {
                 complete();
-                onComplete.accept(tickResult.getRight(), context);
+                onComplete.accept(tickResult.result(), context);
             }
         }
     }

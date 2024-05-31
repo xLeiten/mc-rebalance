@@ -1,12 +1,10 @@
 package me.xleiten.rebalance.core.mixins.world.entity.damage_rebalance;
 
 import net.minecraft.entity.DamageUtil;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Debug(export = true)
 @Mixin(DamageUtil.class)
 public abstract class MixinDamageUtil
 {
@@ -18,7 +16,19 @@ public abstract class MixinDamageUtil
             ),
             index = 2
     )
-    private static float changeProtectionMaxLimit(float value) {
+    private static float changeProtectionMaxLimit1(float value) {
+        return 23f;
+    }
+
+    @ModifyArg(
+            method = "getDamageLeft",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F"
+            ),
+            index = 2
+    )
+    private static float changeProtectionMaxLimit2(float value) {
         return 23f;
     }
 }

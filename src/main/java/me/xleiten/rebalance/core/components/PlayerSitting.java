@@ -27,13 +27,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class PlayerSitting extends Component<Rebalance>
 {
-    private final ConcurrentHashMap<UUID, SittingPlayer> PLAYERS_SITTING = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, SittingPlayer> sittingPlayers = new ConcurrentHashMap<>();
 
     public PlayerSitting(@NotNull Rebalance mod)
     {
         super("Player sitting", mod);
 
         UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
+            if (!isEnabled()) return ActionResult.PASS;
             if (hand == Hand.MAIN_HAND && hitResult != null) {
                 if (player.getMainHandStack().isEmpty()) {
                     var pos = hitResult.getBlockPos();
@@ -45,7 +46,8 @@ public final class PlayerSitting extends Component<Rebalance>
         });
 
         ServerTickEvents.END_SERVER_TICK.register(world -> {
-            PLAYERS_SITTING.forEach((id, data) -> {
+            if (!isEnabled()) return;
+            sittingPlayers.forEach((id, data) -> {
                 data.updateRotation();
                 if (!isValidState(data.world.getBlockState(data.pos)) || !data.vehicle.hasPassengers())
                     makePlayerStandUp(data);
@@ -53,8 +55,8 @@ public final class PlayerSitting extends Component<Rebalance>
         });
 
         ServerWorldEvents.UNLOAD.register((server, world) -> {
-            PLAYERS_SITTING.forEach((id, data) -> data.vehicle.discard());
-            PLAYERS_SITTING.clear();
+            sittingPlayers.forEach((id, data) -> data.vehicle.discard());
+            sittingPlayers.clear();
         });
     }
 
@@ -69,7 +71,7 @@ public final class PlayerSitting extends Component<Rebalance>
 
     private void makePlayerSit(PlayerEntity player, BlockPos pos) {
         var playerId = player.getUuid();
-        if (player.hasVehicle() || PLAYERS_SITTING.containsKey(playerId)) return;
+        if (player.hasVehicle() || sittingPlayers.containsKey(playerId)) return;
         if (player.getPos().add(0, 0.75, 0).distanceTo(pos.toCenterPos()) > 1.75) return;
 
         var world = player.getWorld();
@@ -86,12 +88,12 @@ public final class PlayerSitting extends Component<Rebalance>
         if (maxHealthInstance != null) maxHealthInstance.setBaseValue(1f);
         world.spawnEntity(vehicle);
         player.startRiding(vehicle, true);
-        PLAYERS_SITTING.putIfAbsent(playerId, new SittingPlayer(player, vehicle, pos, world));
+        sittingPlayers.putIfAbsent(playerId, new SittingPlayer(player, vehicle, pos, world));
     }
 
     private void makePlayerStandUp(SittingPlayer data) {
         data.vehicle.discard();
-        PLAYERS_SITTING.remove(data.player.getUuid());
+        sittingPlayers.remove(data.player.getUuid());
     }
 
     private record SittingPlayer(PlayerEntity player, ArmorStandEntity vehicle, BlockPos pos, World world)

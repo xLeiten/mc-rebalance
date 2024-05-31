@@ -11,7 +11,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.ChatVisibility;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.SyncedClientOptions;
-import net.minecraft.network.packet.s2c.play.*;
+import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ConnectedClientData;
@@ -42,7 +42,7 @@ public class HumanEntity extends ServerPlayerEntity
                 profile, 0,
                 new SyncedClientOptions(
                         "en_us", 0, ChatVisibility.HIDDEN, false, 0, PlayerEntity.DEFAULT_MAIN_ARM, false, false
-                )
+                ), false
         ));
     }
 

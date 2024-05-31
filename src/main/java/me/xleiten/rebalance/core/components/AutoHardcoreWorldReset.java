@@ -25,11 +25,12 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
 {
     private final Option<Integer> maxResetTime = settings.option("reset-counter-ticks", 210);
     private final Option<Boolean> showSeconds = settings.option("show-seconds", true);
+    private final Option<String> datapacksFolder = settings.option("datapacks-folder", "datapacks");
 
     private final Option<Integer> totalRestarts = settings.option("total-restarts", 0);
 
     private boolean isResetting = false;
-    private int counter = maxResetTime.getValue();
+    private int counter = maxResetTime.value();
 
     public AutoHardcoreWorldReset(@NotNull Rebalance mod) {
         super("Auto hardcore world reset", mod);
@@ -50,7 +51,7 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
                         .then(literal("cancel").executes(context -> {
                             context.getSource().getServer().getPlayerManager().broadcast(Text.of("Перезапуск мира отменен"), false);
                             isResetting = false;
-                            counter = maxResetTime.getValue();
+                            counter = maxResetTime.value();
                             return 1;
                         }))
                 );
@@ -66,11 +67,11 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
             ServerTickEvents.END_SERVER_TICK.register(server -> {
                 if (isResetting) {
                     if (counter > 0) {
-                        if (showSeconds.getValue() && counter-- % 20 == 0)
+                        if (showSeconds.value() && counter-- % 20 == 0)
                             server.getPlayerManager().broadcast(Text.of("Перезапуск мира через: " + (counter / 20) + " сек."), false);
                         return;
                     }
-                    totalRestarts.setValue(totalRestarts.getValue() + 1);
+                    totalRestarts.value(totalRestarts.value() + 1);
                     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                         deleteWorldFiles(server.getRunDirectory().toPath());
                         executeRestart();
@@ -87,19 +88,15 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
     }
 
     private void deleteWorldFiles(Path worldDir) {
-        try (Stream<Path> files = Files.list(worldDir.resolve("world"))) {
-            files.filter(file -> !file.endsWith("datapacks")).forEach(file -> {
-                try {
-                    if (Files.isDirectory(file))
-                        FileUtils.deleteDirectory(file.toFile());
-                    else
-                        Files.delete(file);
-                } catch (Exception exception) {
-                    logger.warn("Error while deleting world files. " + exception.getMessage());
-                }
-            });
+        try (Stream<Path> files = Files.list(worldDir.resolve("world")).filter(file -> !file.endsWith(datapacksFolder.value()))) {
+            for (Path file: files.toList()) {
+                if (Files.isDirectory(file))
+                    FileUtils.deleteDirectory(file.toFile());
+                else
+                    Files.delete(file);
+            }
         } catch (Exception exception) {
-            logger.warn("Error while deleting world files. " + exception.getMessage());
+            logger.warn("Error while deleting world files. {}", exception.getMessage());
         }
     }
 
@@ -107,11 +104,11 @@ public final class AutoHardcoreWorldReset extends Component<Rebalance>
         try {
             Runtime.getRuntime().exec("cmd /c start \"\" start.bat");
         } catch (IOException exception) {
-            logger.warn("Restart error. " + exception.getMessage());
+            logger.warn("Restart error. {}", exception.getMessage());
         }
     }
 
     public int getTotalRestarts() {
-        return totalRestarts.getValue();
+        return totalRestarts.value();
     }
 }
