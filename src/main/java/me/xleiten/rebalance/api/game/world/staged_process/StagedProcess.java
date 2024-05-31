@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 
-public final class StagedProcess<T extends StageContext>
+public final class StagedProcess<T extends ProcessContext>
 {
     private final BiConsumer<Boolean, T> onComplete;
     private final T context;

@@ -136,19 +136,6 @@ public final class RebalanceDataGenerator implements DataGeneratorEntrypoint
                     .addTag(RebalanceEntityTypeTags.GUARDIANS)
             ;
 
-            getOrCreateTagBuilder(RebalanceEntityTypeTags.CAN_MINE_BLOCKS)
-                    .add(
-                            EntityType.ZOMBIE,
-                            EntityType.HUSK,
-                            EntityType.SKELETON,
-                            EntityType.WITHER_SKELETON,
-                            EntityType.ZOMBIFIED_PIGLIN,
-                            EntityType.PIGLIN,
-                            EntityType.STRAY,
-                            EntityType.ENDERMAN
-                    )
-            ;
-
             getOrCreateTagBuilder(RebalanceEntityTypeTags.WITHOUT_HEALTH_DISPLAY)
                     .addTag(RebalanceEntityTypeTags.BOSSES)
             ;

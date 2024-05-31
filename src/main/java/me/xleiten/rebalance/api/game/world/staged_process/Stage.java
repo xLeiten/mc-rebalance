@@ -2,7 +2,7 @@ package me.xleiten.rebalance.api.game.world.staged_process;
 
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Stage<T extends StageContext>
+public abstract class Stage<T extends ProcessContext>
 {
     public final T context;
 

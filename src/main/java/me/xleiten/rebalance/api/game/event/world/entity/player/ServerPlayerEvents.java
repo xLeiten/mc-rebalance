@@ -24,11 +24,6 @@ public final class ServerPlayerEvents
             listener.onRespawn(player, world, server);
     });
 
-    public static final Event<Damage> DAMAGE = EventFactory.createArrayBacked(Damage.class, listeners -> (player, source, damage) -> {
-        for (Damage listener: listeners)
-            listener.onDamage(player, source, damage);
-    });
-
     @FunctionalInterface
     public interface Death
     {
@@ -39,11 +34,5 @@ public final class ServerPlayerEvents
     public interface Respawn
     {
          void onRespawn(ServerPlayerEntity player, ServerWorld world, MinecraftServer server);
-    }
-
-    @FunctionalInterface
-    public interface Damage
-    {
-        void onDamage(ServerPlayerEntity player, DamageSource cause, float damage);
     }
 }

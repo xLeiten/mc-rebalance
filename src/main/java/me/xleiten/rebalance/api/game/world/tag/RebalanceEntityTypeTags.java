@@ -18,9 +18,6 @@ public final class RebalanceEntityTypeTags
     public static final TagKey<EntityType<?>> CAN_FULLY_SEE_IN_DARKNESS = create("can_fully_see_in_darkness");
     public static final TagKey<EntityType<?>> VISION_NOT_AFFECTED_BY_SCULK = create("vision_not_affected_by_sculk");
 
-    public static final TagKey<EntityType<?>> CAN_MINE_BLOCKS = create("can_mine_blocks");
-    public static final TagKey<EntityType<?>> CAN_PLACE_BLOCKS = create("can_place_blocks");
-
     private static TagKey<EntityType<?>> create(String name) {
         return TagKey.of(RegistryKeys.ENTITY_TYPE, new Identifier(Rebalance.MOD_ID, name));
     }

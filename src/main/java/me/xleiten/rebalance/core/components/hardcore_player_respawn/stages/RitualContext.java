@@ -2,7 +2,7 @@ package me.xleiten.rebalance.core.components.hardcore_player_respawn.stages;
 
 import me.xleiten.rebalance.api.game.world.entity.SkinHolder;
 import me.xleiten.rebalance.api.game.world.npc.HumanEntity;
-import me.xleiten.rebalance.api.game.world.staged_process.StageContext;
+import me.xleiten.rebalance.api.game.world.staged_process.ProcessContext;
 import me.xleiten.rebalance.core.components.hardcore_player_respawn.HardcorePlayerRespawn;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public final class RitualContext implements StageContext
+public final class RitualContext implements ProcessContext
 {
     public final HardcorePlayerRespawn component;
     public final UUID playerId;

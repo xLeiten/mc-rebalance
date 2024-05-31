@@ -1,9 +1,10 @@
 package me.xleiten.rebalance.api.game.world.staged_process;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class TickResult<L extends Stage<?>> {
-
+public abstract class TickResult<L extends Stage<?>>
+{
     public static <L extends Stage<?>> Left<L> stage(@NotNull L value) {
         return new Left<>(value);
     }
@@ -12,8 +13,10 @@ public abstract class TickResult<L extends Stage<?>> {
         return new Right<>(value);
     }
 
+    @Nullable
     public abstract L stage();
 
+    @Nullable
     public abstract Boolean result();
 
     public static class Left<L extends Stage<?>> extends TickResult<L>
