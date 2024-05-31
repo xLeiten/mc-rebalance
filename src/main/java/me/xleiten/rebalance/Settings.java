@@ -118,7 +118,11 @@ public final class Settings
     public static final Option<Float> MOB_IRON_GOLEM__MAX_HEALTH = MOB_IRON_GOLEM.option("max-health", 250f);
     public static final Option<DoubleRange> MOB_IRON_GOLEM__MOVE_SPEED_BOOST = MOB_IRON_GOLEM.option("move-speed-boost", Range.create(0.1, 0.2));
     public static final Option<DoubleRange> MOB_IRON_GOLEM__FOLLOW_RANGE_BOOST = MOB_IRON_GOLEM.option("follow-range", Range.create(24., 32));
-    
+
+    public static final Section MOB_GHAST = MOBS.section("Ghast");
+    public static final Option<Float> MOB_GHAST__MAX_HEALTH = MOB_GHAST.option("max-health", 20f);
+    public static final Option<Integer> MOB_GHAST__FIREBALL_POWER = MOB_GHAST.option("fireball-power", 3);
+
     // AI
     public static final Section AI = ENTITIES.section("AI");
     
@@ -176,8 +180,6 @@ public final class Settings
     public static final Option<Integer> PASSIVE_HEALTH_REGENERATION__START_DELAY = Settings.PASSIVE_HEALTH_REGENERATION.option("after-damage-delay", 100);
     public static final Option<Float> PASSIVE_HEALTH_REGENERATION__HEALTH_PERCENT = Settings.PASSIVE_HEALTH_REGENERATION.option("healing-percent-of-max-health", 0.05f);
     
-    public static final Section SHIELD_REWORK = MAIN_STORAGE.section("Shield rework");
-    
     public static final Section HEALTH_DISPLAY = MAIN_STORAGE.section("Health display");
     public static final Option<Integer> HEALTH_DISPLAY__DISPLAY_TICKS = Settings.HEALTH_DISPLAY.option("display-ticks", 120);
     
@@ -186,6 +188,6 @@ public final class Settings
     public static final Option<Integer> CUSTOM_SLEEPING__TICKS_DELTA = Settings.CUSTOM_SLEEPING.option("formatted-time-ticks-delta", 7000);
     
     public static final Section FIREBALL_THROWING = MAIN_STORAGE.section("Fireball Throwing");
-    public static final Option<Integer> FIREBALL_THROWING__POWER = me.xleiten.rebalance.Settings.FIREBALL_THROWING.option("power", 2);
+    public static final Option<Integer> FIREBALL_THROWING__POWER = me.xleiten.rebalance.Settings.FIREBALL_THROWING.option("power", 1);
     public static final Option<Integer> FIREBALL_THROWING__COOLDOWN = me.xleiten.rebalance.Settings.FIREBALL_THROWING.option("cooldown", 5);
 }
