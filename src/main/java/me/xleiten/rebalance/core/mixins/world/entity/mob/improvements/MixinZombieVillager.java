@@ -32,8 +32,8 @@ public abstract class MixinZombieVillager extends MixinZombieEntity
     )
     private void initCustomVars(EntityType<? extends ZombieEntity> entityType, World world, CallbackInfo ci) {
         this.cringeMod$setCanAdaptToLight(MOB_ZOMBIE_VILLAGER__SHOULD_ADAPT_TO_LIGHT.value());
-        this.cringeMod$setBurnInDayLight(MOB_ZOMBIE_VILLAGER__SHOULD_ADAPT_TO_LIGHT.value());
-        this.cringeMod$setCanAlertOthers(MOB_ZOMBIE_VILLAGER__SHOULD_ADAPT_TO_LIGHT.value());
+        this.cringeMod$setBurnInDayLight(MOB_ZOMBIE_VILLAGER__SHOULD_BURN_IN_LIGHT.value());
+        this.cringeMod$setCanAlertOthers(MOB_ZOMBIE_VILLAGER__SHOULD_ALERT_OTHERS.value());
     }
 
     @Override

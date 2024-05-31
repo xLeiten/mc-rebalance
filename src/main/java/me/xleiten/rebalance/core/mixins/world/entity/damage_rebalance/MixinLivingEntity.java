@@ -48,8 +48,8 @@ public abstract class MixinLivingEntity extends Entity
         } else if (source.isOf(DamageTypes.LAVA)) {
             var armorPieces = getEquippedArmorPiecesAmount(it -> it == ArmorMaterials.NETHERITE || it == ArmorMaterials.DIAMOND);
             result *= Settings.DAMAGE_SOURCE__LAVA_MULT.value() * (1 -
-                    (armorPieces * Settings.ITEM_ARMOR__NETHERITE_FIRE_RESISTANCE.value()
-                            + armorPieces * Settings.ITEM_ARMOR__DIAMOND_FIRE_RESISTANCE.value()));
+                    (armorPieces * Settings.ITEM_ARMOR__NETHERITE_LAVA_RESISTANCE.value()
+                            + armorPieces * Settings.ITEM_ARMOR__DIAMOND_LAVA_RESISTANCE.value()));
         } else if (source.isOf(DamageTypes.IN_FIRE)) {
             var armorPieces = getEquippedArmorPiecesAmount(it -> it == ArmorMaterials.NETHERITE || it == ArmorMaterials.DIAMOND);
             result *= Settings.DAMAGE_SOURCE__FIRE_MULT.value() * (1 -

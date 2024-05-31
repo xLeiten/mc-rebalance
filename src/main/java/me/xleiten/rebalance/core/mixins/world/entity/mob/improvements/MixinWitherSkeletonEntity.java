@@ -37,7 +37,7 @@ public abstract class MixinWitherSkeletonEntity extends MixinHostileEntity
     @Override
     public void rebalanceMod$onFirstSpawn(ServerWorldAccess world, Random random, SpawnReason reason) {
         super.rebalanceMod$onFirstSpawn(world, random, reason);
-        addModifier(this, EntityAttributes.GENERIC_MOVEMENT_SPEED, modifier("moveSpeedBoost", range(random, MOB_WITCH__MOVE_SPEED_MULT.value())));
+        addModifier(this, EntityAttributes.GENERIC_MOVEMENT_SPEED, modifier("moveSpeedBoost", range(random, MOB_WITHER_SKELETON__MOVE_SPEED_MULT.value())));
         var stackInHand = getStackInHand(Hand.MAIN_HAND);
         if (stackInHand.getItem() instanceof SwordItem) {
             if (chance(random, MOB_WITHER_SKELETON__SWORD_SHARPNESS_CHANCE.value())) stackInHand.addEnchantment(Enchantments.SHARPNESS, range(random, MOB_WITHER_SKELETON__SWORD_SHARPNESS_LEVEL.value()));

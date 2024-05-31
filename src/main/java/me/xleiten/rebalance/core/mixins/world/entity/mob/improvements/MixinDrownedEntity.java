@@ -48,7 +48,7 @@ public abstract class MixinDrownedEntity extends MixinZombieEntity
         super.rebalanceMod$onFirstSpawn(world, random, reason);
 
         addModifier(this, EntityAttributes.GENERIC_FOLLOW_RANGE, modifier("followRangeBoost", range(random, MOB_DROWNED__FOLLOW_RANGE_MULT.value())));
-        addModifier(this, EntityAttributes.GENERIC_MOVEMENT_SPEED, modifier("moveSpeedBoost", range(random, (isBaby() ? MOB_DROWNED__BABY_MOVE_SPEED_MULT : MOB_CREEPER__MOVE_SPEED_MULT).value())));
+        addModifier(this, EntityAttributes.GENERIC_MOVEMENT_SPEED, modifier("moveSpeedBoost", range(random, (isBaby() ? MOB_DROWNED__BABY_MOVE_SPEED_MULT : MOB_DROWNED__MOVE_SPEED_MULT).value())));
 
         if (chance(random, MOB_DROWNED__BREAK_DOORS_CHANCE.value()))
             setCanBreakDoors(true);
