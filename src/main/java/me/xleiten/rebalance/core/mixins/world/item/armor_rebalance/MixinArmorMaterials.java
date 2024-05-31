@@ -4,7 +4,6 @@ import me.xleiten.rebalance.Settings;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.util.Util;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -12,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.EnumMap;
 
-@Debug(export = true)
 @Mixin(ArmorMaterials.class)
 public abstract class MixinArmorMaterials
 {

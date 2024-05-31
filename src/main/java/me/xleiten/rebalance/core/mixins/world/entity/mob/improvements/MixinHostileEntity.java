@@ -30,8 +30,7 @@ import static me.xleiten.rebalance.util.AttributeHelper.setBaseValue;
 @Mixin(HostileEntity.class)
 public abstract class MixinHostileEntity extends MixinMobEntity implements Mob
 {
-    @Shadow
-    public abstract boolean shouldDropXp();
+    @Shadow public abstract boolean shouldDropXp();
 
     protected MixinHostileEntity(EntityType<? extends MobEntity> entityType, World world)
     {

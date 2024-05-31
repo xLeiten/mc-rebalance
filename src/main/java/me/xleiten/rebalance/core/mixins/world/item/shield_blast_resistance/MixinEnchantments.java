@@ -4,12 +4,10 @@ import me.xleiten.rebalance.api.game.world.tag.RebalanceItemTags;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.TagKey;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-@Debug(export = true)
 @Mixin(Enchantments.class)
 public abstract class MixinEnchantments
 {

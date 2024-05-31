@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(EntityAttributeModifier.class)
 public abstract class MixinEntityAttributeModifier implements AttributeModifier
 {
-    @Shadow @Final private String name;
     @Mutable @Shadow @Final private double value;
 
     @Override

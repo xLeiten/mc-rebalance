@@ -8,7 +8,6 @@ import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +18,6 @@ import static me.xleiten.rebalance.api.math.RandomHelper.chance;
 import static me.xleiten.rebalance.api.math.RandomHelper.range;
 import static me.xleiten.rebalance.util.AttributeHelper.*;
 
-@Debug(export = true)
 @Mixin(ZombieVillagerEntity.class)
 public abstract class MixinZombieVillager extends MixinZombieEntity
 {

@@ -7,14 +7,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Debug(export = true)
 @Mixin(BoatEntity.class)
 public abstract class MixinBoatEntity extends Entity
 {

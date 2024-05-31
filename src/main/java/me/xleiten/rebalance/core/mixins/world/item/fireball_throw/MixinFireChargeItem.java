@@ -25,7 +25,6 @@ public abstract class MixinFireChargeItem extends Item
         var result = super.use(world, user, hand);
         if (result.getResult() == ActionResult.PASS) {
             user.getStackInHand(hand).decrementUnlessCreative(1, user);
-            var vel = user.getRotationVector().normalize().multiply(2 * user.getVelocity().length());
             var pos = user.getEyePos();
             var entity = new SmallExplosiveFireballEntity(world, user, pos.x, pos.y - user.getDimensions(user.getPose()).width() / 4, pos.z, 2);
             entity.deflect(ProjectileDeflection.REDIRECTED, user, user, true);
