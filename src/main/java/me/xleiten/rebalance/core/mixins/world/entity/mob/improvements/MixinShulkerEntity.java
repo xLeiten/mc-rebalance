@@ -6,25 +6,22 @@ import me.xleiten.rebalance.util.AttributeHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.mob.GhastEntity;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(GhastEntity.class)
-public abstract class MixinGhastEntity extends MixinMobEntity
+@Mixin(ShulkerEntity.class)
+public abstract class MixinShulkerEntity extends MixinMobEntity
 {
-    @Shadow private int fireballStrength = Settings.MOB_GHAST__FIREBALL_POWER.value();
-
-    protected MixinGhastEntity(EntityType<? extends LivingEntity> entityType, World world) {
+    protected MixinShulkerEntity(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }
 
     @Override
     public void rebalanceMod$onFirstSpawn(ServerWorldAccess world, Random random, SpawnReason reason) {
         super.rebalanceMod$onFirstSpawn(world, random, reason);
-        AttributeHelper.setBaseValue(this, EntityAttributes.GENERIC_MAX_HEALTH, Settings.MOB_GHAST__MAX_HEALTH.value());
+        AttributeHelper.setBaseValue(this, EntityAttributes.GENERIC_MAX_HEALTH, Settings.MOB_SHULKER__MAX_HEALTH.value());
     }
 }

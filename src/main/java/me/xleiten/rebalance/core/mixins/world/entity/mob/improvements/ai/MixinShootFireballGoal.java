@@ -1,63 +1,59 @@
 package me.xleiten.rebalance.core.mixins.world.entity.mob.improvements.ai;
 
-import net.minecraft.entity.LivingEntity;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.mob.GhastEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
-import org.spongepowered.asm.mixin.Final;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net/minecraft/entity/mob/GhastEntity$ShootFireballGoal")
 public abstract class MixinShootFireballGoal extends Goal
 {
-    @Shadow @Final private GhastEntity ghast;
-
     @Shadow public int cooldown;
 
-    /**
-     * @author xLeiten
-     * @reason cant do another
-     */
-    @Overwrite
-    public void tick() {
-        LivingEntity livingEntity = this.ghast.getTarget();
-        if (livingEntity != null) {
-            if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
-                World world = this.ghast.getWorld();
-                ++this.cooldown;
-                if (this.cooldown == 10 && !this.ghast.isSilent()) {
-                    world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, this.ghast.getBlockPos(), 0);
-                }
-
-                if (this.cooldown == 20 || this.cooldown == 40) {
-                    Vec3d vec3d = this.ghast.getRotationVec(1.0F);
-                    double f = livingEntity.getX() - (this.ghast.getX() + vec3d.x * 4.0);
-                    double g = livingEntity.getBodyY(0.5) - (0.5 + this.ghast.getBodyY(0.5));
-                    double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
-                    if (!this.ghast.isSilent()) {
-                        world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, this.ghast.getBlockPos(), 0);
-                    }
-
-                    FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h, this.ghast.getFireballStrength());
-                    fireballEntity.setPosition(this.ghast.getX() + vec3d.x * 4.0, this.ghast.getBodyY(0.5) + 0.5, fireballEntity.getZ() + vec3d.z * 4.0);
-                    world.spawnEntity(fireballEntity);
-                }
-
-                if (this.cooldown >= 40) {
-                    this.cooldown = -40;
-                }
-            } else if (this.cooldown > 0) {
-                --this.cooldown;
-            }
-
-            this.ghast.setShooting(this.cooldown > 10);
-        }
+    @ModifyExpressionValue(
+            method = "tick",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/entity/mob/GhastEntity$ShootFireballGoal;cooldown:I",
+                    opcode = Opcodes.GETFIELD,
+                    ordinal = 2
+            )
+    )
+    private int allowMultipleFireballs(int original, @Share("thirdFireball") LocalBooleanRef ref) {
+        return original == 20 || original == 40 || original == 60 ? 20 : original;
     }
 
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z",
+                    shift = At.Shift.AFTER
+            )
+    )
+    private void changeResultCooldown1(CallbackInfo ci, @Share("temp") LocalIntRef temp) {
+        temp.set(cooldown);
+    }
 
+    @Inject(
+            method = "tick",
+            at = @At(
+                    value = "FIELD",
+                    target = "Lnet/minecraft/entity/mob/GhastEntity$ShootFireballGoal;cooldown:I",
+                    opcode = Opcodes.PUTFIELD,
+                    shift = At.Shift.AFTER,
+                    ordinal = 1
+            )
+    )
+    private void changeResultCooldown2(CallbackInfo ci, @Share("temp") LocalIntRef temp, @Share("thirdFireball") LocalBooleanRef thirdFireball) {
+        int result = temp.get();
+        this.cooldown = result < 60 ? result : -40;
+    }
 }

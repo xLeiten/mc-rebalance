@@ -123,6 +123,11 @@ public final class Settings
     public static final Option<Float> MOB_GHAST__MAX_HEALTH = MOB_GHAST.option("max-health", 20f);
     public static final Option<Integer> MOB_GHAST__FIREBALL_POWER = MOB_GHAST.option("fireball-power", 3);
 
+    public static final Section MOB_SHULKER = MOBS.section("Shulker");
+    public static final Option<Float> MOB_SHULKER__MAX_HEALTH = MOB_SHULKER.option("max-health", 30f);
+    public static final Option<Boolean> MOB_SHULKER__SHOOT_SECOND_BULLET = MOB_SHULKER.option("shoot-second-bullet", true);
+    public static final Option<Integer> MOB_SHULKER__BULLET_COOLDOWN_DECREASE = MOB_SHULKER.option("bullet-cooldown-decrease-ticks", 10);
+
     // AI
     public static final Section AI = ENTITIES.section("AI");
     
